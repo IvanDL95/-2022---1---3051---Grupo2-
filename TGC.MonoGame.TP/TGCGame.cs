@@ -3,7 +3,9 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace TGC.MonoGame.TP
+using TGC.MonoGame.TP.Models;
+
+namespace TGC.MonoGame.TP.TGCGame
 {
     /// <summary>
     ///     Esta es la clase principal  del juego.
@@ -12,6 +14,11 @@ namespace TGC.MonoGame.TP
     /// </summary>
     public class TGCGame : Game
     {
+        /// <summary>
+        ///     The folder which the game will search for content.
+        /// </summary>
+        public const string ContentFolder = "Content";
+
         public const string ContentFolder3D = "Models/";
         public const string ContentFolderEffects = "Effects/";
         public const string ContentFolderMusic = "Music/";
@@ -29,17 +36,27 @@ namespace TGC.MonoGame.TP
             // Descomentar para que el juego sea pantalla completa.
             // Graphics.IsFullScreen = true;
             // Carpeta raiz donde va a estar toda la Media.
-            Content.RootDirectory = "Content";
+            Content.RootDirectory = ContentFolder;
             // Hace que el mouse sea visible.
             IsMouseVisible = true;
         }
 
+        /// <summary>
+        ///     Sample background color.
+        /// </summary>
+        public Color Background { get; set; }
+
         private GraphicsDeviceManager Graphics { get; }
         private SpriteBatch SpriteBatch { get; set; }
         private Model Model { get; set; }
+        private Model RaceCarModel { get; set; }
+        private Matrix RaceCarWorld { get; set; }
+        private TankModel TankModel { get; set; }
+        private Tank Tank { get; set; }
         private Effect Effect { get; set; }
         private float Rotation { get; set; }
         private Matrix World { get; set; }
+        private Matrix TankWorld { get; set; }
         private Matrix View { get; set; }
         private Matrix Projection { get; set; }
 
@@ -65,6 +82,11 @@ namespace TGC.MonoGame.TP
             Projection =
                 Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, GraphicsDevice.Viewport.AspectRatio, 1, 250);
 
+            TankWorld = Matrix.Identity;
+            // Tank = new Tank(this);
+
+            RaceCarWorld = Matrix.Identity;
+
             base.Initialize();
         }
 
@@ -80,6 +102,11 @@ namespace TGC.MonoGame.TP
 
             // Cargo el modelo del logo.
             Model = Content.Load<Model>(ContentFolder3D + "tgc-logo/tgc-logo");
+            // RaceCarModel = Content.Load<Model>(ContentFolder3D + "vehicles/CombatVehicle/Vehicle");
+            // TankModel = new TankModel();
+            // TankModel.Load(Content.Load<Model>(ContentFolder3D + "vehicles/Tank/tank"));
+
+            // Tank.Initialize();
 
             // Cargo un efecto basico propio declarado en el Content pipeline.
             // En el juego no pueden usar BasicEffect de MG, deben usar siempre efectos propios.
@@ -91,7 +118,13 @@ namespace TGC.MonoGame.TP
                 // Un mesh puede tener mas de 1 mesh part (cada 1 puede tener su propio efecto).
             foreach (var meshPart in mesh.MeshParts)
                 meshPart.Effect = Effect;
-
+            // Asigno el efecto que cargue a cada parte del mesh.
+            // Un modelo puede tener mas de 1 mesh internamente.
+/*             foreach (var mesh in RaceCarModel.Meshes)
+                // Un mesh puede tener mas de 1 mesh part (cada 1 puede tener su propio efecto).
+            foreach (var meshPart in mesh.MeshParts)
+                meshPart.Effect = Effect;
+ */
             base.LoadContent();
         }
 
@@ -108,9 +141,19 @@ namespace TGC.MonoGame.TP
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 //Salgo del juego.
                 Exit();
-
+            
+            var time = Convert.ToSingle(gameTime.TotalGameTime.TotalSeconds);
+/* 
+            TankModel.WheelRotation = time * 5;
+            TankModel.SteerRotation = (float) Math.Sin(time * 0.75f) * 0.5f;
+            TankModel.TurretRotation = (float) Math.Sin(time * 0.333f) * 1.25f;
+            TankModel.CannonRotation = (float) Math.Sin(time * 0.25f) * 0.333f - 0.333f;
+            TankModel.HatchRotation = MathHelper.Clamp((float) Math.Sin(time * 2) * 2, -1, 0);
+ */
             // Basado en el tiempo que paso se va generando una rotacion.
             Rotation += Convert.ToSingle(gameTime.ElapsedGameTime.TotalSeconds);
+
+            // Tank.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -136,6 +179,17 @@ namespace TGC.MonoGame.TP
                 Effect.Parameters["World"].SetValue(World);
                 mesh.Draw();
             }
+/* 
+            foreach (var mesh in RaceCarModel.Meshes)
+            {
+                RaceCarWorld = mesh.ParentBone.Transform * rotationMatrix;
+                Effect.Parameters["World"].SetValue(World);
+                mesh.Draw();
+            }
+             */
+            // Calculate the camera matrices.
+            // var time = Convert.ToSingle(gameTime.TotalGameTime.TotalSeconds);
+            // TankModel.Draw(TankWorld * Matrix.CreateRotationY(time * 0.1f), View, Projection);
         }
 
         /// <summary>
