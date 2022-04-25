@@ -80,7 +80,7 @@ namespace TGC.MonoGame.TP.TGCGame
         /// <inheritdoc />
         public override void Draw(GameTime gameTime)
         {
-            BaseGame.Background = Color.CornflowerBlue;
+            // BaseGame.Background = Color.CornflowerBlue;
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
 
             // Calculate the camera matrices.

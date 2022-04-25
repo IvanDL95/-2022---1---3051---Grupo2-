@@ -54,6 +54,7 @@ namespace TGC.MonoGame.TP.TGCGame
         private TankModel TankModel { get; set; }
         private Tank Tank { get; set; }
         private Effect Effect { get; set; }
+        private Effect OtherEffect { get; set; }
         private float Rotation { get; set; }
         private Matrix World { get; set; }
         private Matrix TankWorld { get; set; }
@@ -68,12 +69,12 @@ namespace TGC.MonoGame.TP.TGCGame
         {
             // La logica de inicializacion que no depende del contenido se recomienda poner en este metodo.
 
-            // Apago el backface culling.
-            // Esto se hace por un problema en el diseno del modelo del logo de la materia.
-            // Una vez que empiecen su juego, esto no es mas necesario y lo pueden sacar.
+            // Enciendo Back-Face culling
+            // Configuro Blend State a Opaco
             var rasterizerState = new RasterizerState();
-            rasterizerState.CullMode = CullMode.None;
+            rasterizerState.CullMode = CullMode.CullCounterClockwiseFace;
             GraphicsDevice.RasterizerState = rasterizerState;
+            GraphicsDevice.BlendState = BlendState.Opaque;
             // Seria hasta aca.
 
             // Configuramos nuestras matrices de la escena.
@@ -82,6 +83,7 @@ namespace TGC.MonoGame.TP.TGCGame
             Projection =
                 Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, GraphicsDevice.Viewport.AspectRatio, 1, 250);
 
+            TankModel = new TankModel();
             TankWorld = Matrix.Identity;
             // Tank = new Tank(this);
 
@@ -102,8 +104,7 @@ namespace TGC.MonoGame.TP.TGCGame
 
             // Cargo el modelo del logo.
             Model = Content.Load<Model>(ContentFolder3D + "tgc-logo/tgc-logo");
-            // RaceCarModel = Content.Load<Model>(ContentFolder3D + "vehicles/CombatVehicle/Vehicle");
-            // TankModel = new TankModel();
+            RaceCarModel = Content.Load<Model>(ContentFolder3D + "vehicles/CombatVehicle/Vehicle");
             // TankModel.Load(Content.Load<Model>(ContentFolder3D + "vehicles/Tank/tank"));
 
             // Tank.Initialize();
@@ -111,6 +112,7 @@ namespace TGC.MonoGame.TP.TGCGame
             // Cargo un efecto basico propio declarado en el Content pipeline.
             // En el juego no pueden usar BasicEffect de MG, deben usar siempre efectos propios.
             Effect = Content.Load<Effect>(ContentFolderEffects + "BasicShader");
+            OtherEffect = Content.Load<Effect>(ContentFolderEffects + "BasicShader");
 
             // Asigno el efecto que cargue a cada parte del mesh.
             // Un modelo puede tener mas de 1 mesh internamente.
@@ -120,11 +122,11 @@ namespace TGC.MonoGame.TP.TGCGame
                 meshPart.Effect = Effect;
             // Asigno el efecto que cargue a cada parte del mesh.
             // Un modelo puede tener mas de 1 mesh internamente.
-/*             foreach (var mesh in RaceCarModel.Meshes)
+            foreach (var mesh in RaceCarModel.Meshes)
                 // Un mesh puede tener mas de 1 mesh part (cada 1 puede tener su propio efecto).
             foreach (var meshPart in mesh.MeshParts)
-                meshPart.Effect = Effect;
- */
+                meshPart.Effect = OtherEffect;
+
             base.LoadContent();
         }
 
@@ -168,27 +170,34 @@ namespace TGC.MonoGame.TP.TGCGame
             GraphicsDevice.Clear(Color.Black);
 
             // Para dibujar le modelo necesitamos pasarle informacion que el efecto esta esperando.
-            Effect.Parameters["View"].SetValue(View);
-            Effect.Parameters["Projection"].SetValue(Projection);
-            Effect.Parameters["DiffuseColor"].SetValue(Color.DarkBlue.ToVector3());
             var rotationMatrix = Matrix.CreateRotationY(Rotation);
 
+            Effect.Parameters["View"].SetValue(View);
+            Effect.Parameters["Projection"].SetValue(Projection);
+            Effect.Parameters["DiffuseColor"].SetValue(Color.Black.ToVector3());
             foreach (var mesh in Model.Meshes)
             {
                 World = mesh.ParentBone.Transform * rotationMatrix;
                 Effect.Parameters["World"].SetValue(World);
                 mesh.Draw();
             }
-/* 
-            foreach (var mesh in RaceCarModel.Meshes)
+
+            var rotationMatrix2 = Matrix.CreateRotationY(Rotation);
+            OtherEffect.Parameters["View"].SetValue(View);
+            OtherEffect.Parameters["Projection"].SetValue(Projection);
+            OtherEffect.Parameters["DiffuseColor"].SetValue(Color.DarkBlue.ToVector3());
+            foreach (var carmesh in RaceCarModel.Meshes)
             {
-                RaceCarWorld = mesh.ParentBone.Transform * rotationMatrix;
-                Effect.Parameters["World"].SetValue(World);
-                mesh.Draw();
+                RaceCarWorld = carmesh.ParentBone.Transform * rotationMatrix2;
+                // Si lo seteo a RaceCarWorld no anda por arte de magia
+                OtherEffect.Parameters["World"].SetValue(World);
+                carmesh.Draw();
             }
-             */
+            
+            //  No anda
+            // RaceCarModel.Draw(RaceCarWorld * rotationMatrix, View, Projection);
             // Calculate the camera matrices.
-            // var time = Convert.ToSingle(gameTime.TotalGameTime.TotalSeconds);
+            var time = Convert.ToSingle(gameTime.TotalGameTime.TotalSeconds);
             // TankModel.Draw(TankWorld * Matrix.CreateRotationY(time * 0.1f), View, Projection);
         }
 
