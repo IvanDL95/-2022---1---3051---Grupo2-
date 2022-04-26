@@ -52,6 +52,7 @@ namespace TGC.MonoGame.TP
         private Matrix View { get; set; }
         private Matrix Projection { get; set; }
         private VehicleModel[] Vehicles { get; set; }
+        private WeaponModel[] Weapons { get; set; }
 
         /// <summary>
         ///     Se llama una sola vez, al principio cuando se ejecuta el ejemplo.
@@ -80,10 +81,12 @@ namespace TGC.MonoGame.TP
             Projection =
                 Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, GraphicsDevice.Viewport.AspectRatio, 1, 5000);
 
-            Vehicles = new VehicleModel[200];
-            for (int i = 0; i < 200; i++)
+            Vehicles = new VehicleModel[100];
+            Weapons = new WeaponModel[100];
+            for (int i = 0; i < 100; i++)
             {
                 Vehicles[i] = new VehicleModel();
+                Weapons[i] = new WeaponModel();
             }
 
             base.Initialize();
@@ -101,9 +104,13 @@ namespace TGC.MonoGame.TP
 
             // Cargo el modelo del logo.
             //Model = Content.Load<Model>(ContentFolder3D + "tgc-logo/tgc-logo");
-            foreach (VehicleModel vehicle in Vehicles)
+            for (int i = 0; i < 100; i++)
             {
+                VehicleModel vehicle = Vehicles[i];
                 vehicle.Load(Content.Load<Model>(ContentFolder3D + "vehicles/CombatVehicle/Vehicle"));
+
+                WeaponModel weapon = Weapons[i];
+                weapon.Load(Content.Load<Model>(ContentFolder3D + "vehicles/CombatVehicle/Weapons"));
             }
             //Vehicle.Load(Content.Load<Model>(ContentFolder3D + "vehicles/CombatVehicle/Vehicle"));
 
@@ -138,9 +145,13 @@ namespace TGC.MonoGame.TP
             
             // Basado en el tiempo que paso.
             var time = Convert.ToSingle(gameTime.TotalGameTime.TotalSeconds);
-            foreach (VehicleModel vehicle in Vehicles)
+            for (int i = 0; i < 100; i++)
             {
+                VehicleModel vehicle = Vehicles[i];
                 vehicle.Update(time);
+
+                WeaponModel weapon = Weapons[i];
+                weapon.Update(time);
             }
             //Rotation += Convert.ToSingle(gameTime.ElapsedGameTime.TotalSeconds);
 
@@ -171,10 +182,13 @@ namespace TGC.MonoGame.TP
                 mesh.Draw();
             }
             */
-            for (int i = 0; i < 200; i++)
+            for (int i = 0; i < 100; i++)
             {
                 VehicleModel vehicle = Vehicles[i];
-                vehicle.Draw(World + Matrix.CreateTranslation((100 - i) * 400, 0, 0), View, Projection);
+                vehicle.Draw(World + Matrix.CreateTranslation((50 - i) * 400, 0, 0), View, Projection);
+
+                WeaponModel weapon = Weapons[i];
+                weapon.Draw(World + Matrix.CreateTranslation((50 - i) * 400, 110, 0), View, Projection);
             }
         }
 

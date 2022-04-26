@@ -17,7 +17,7 @@ namespace TGC.MonoGame.TP.Models
         public void Load(Model model)
         {
             // BaseGame.Content.Load<Model>(TGC.MonoGame.TP.TGCGame.ContentFolder3D + "vehicles/CombatVehicle/Vehicle");
-            Vehicle = model;
+            Weapon = model;
             Rotation = Matrix.Identity;
         }
 
@@ -35,7 +35,7 @@ namespace TGC.MonoGame.TP.Models
         public void Draw(Matrix World, Matrix View, Matrix Projection)
         {
             // Para dibujar le modelo necesitamos pasarle informacion que el efecto esta esperando.
-            foreach (ModelMesh mesh in Vehicle.Meshes)
+            foreach (ModelMesh mesh in Weapon.Meshes)
             {
                 foreach (BasicEffect effect in mesh.Effects)
                 {
@@ -51,7 +51,7 @@ namespace TGC.MonoGame.TP.Models
         #region Fields
 
         // The XNA framework Model object that we are going to display.
-        private Model Vehicle;
+        private Model Weapon;
 
         private Matrix Rotation { get; set; }
 
