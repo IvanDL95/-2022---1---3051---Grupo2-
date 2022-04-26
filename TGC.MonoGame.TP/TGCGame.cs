@@ -103,7 +103,7 @@ namespace TGC.MonoGame.TP.TGCGame
             SpriteBatch = new SpriteBatch(GraphicsDevice);
 
             // Cargo el modelo del logo.
-            Model = Content.Load<Model>(ContentFolder3D + "tgc-logo/tgc-logo");
+            //Model = Content.Load<Model>(ContentFolder3D + "tgc-logo/tgc-logo");
             RaceCarModel = Content.Load<Model>(ContentFolder3D + "vehicles/CombatVehicle/Vehicle");
             // TankModel.Load(Content.Load<Model>(ContentFolder3D + "vehicles/Tank/tank"));
 
@@ -112,20 +112,15 @@ namespace TGC.MonoGame.TP.TGCGame
             // Cargo un efecto basico propio declarado en el Content pipeline.
             // En el juego no pueden usar BasicEffect de MG, deben usar siempre efectos propios.
             Effect = Content.Load<Effect>(ContentFolderEffects + "BasicShader");
-            OtherEffect = Content.Load<Effect>(ContentFolderEffects + "BasicShader");
 
             // Asigno el efecto que cargue a cada parte del mesh.
             // Un modelo puede tener mas de 1 mesh internamente.
-            foreach (var mesh in Model.Meshes)
-                // Un mesh puede tener mas de 1 mesh part (cada 1 puede tener su propio efecto).
-            foreach (var meshPart in mesh.MeshParts)
-                meshPart.Effect = Effect;
-            // Asigno el efecto que cargue a cada parte del mesh.
-            // Un modelo puede tener mas de 1 mesh internamente.
+            /*
             foreach (var mesh in RaceCarModel.Meshes)
                 // Un mesh puede tener mas de 1 mesh part (cada 1 puede tener su propio efecto).
             foreach (var meshPart in mesh.MeshParts)
-                meshPart.Effect = OtherEffect;
+                meshPart.Effect = Effect;
+            */
 
             base.LoadContent();
         }
@@ -167,11 +162,12 @@ namespace TGC.MonoGame.TP.TGCGame
         protected override void Draw(GameTime gameTime)
         {
             // Aca deberiamos poner toda la logia de renderizado del juego.
-            GraphicsDevice.Clear(Color.Black);
+            GraphicsDevice.Clear(Color.DeepSkyBlue);
 
             // Para dibujar le modelo necesitamos pasarle informacion que el efecto esta esperando.
             var rotationMatrix = Matrix.CreateRotationY(Rotation);
 
+            /*
             Effect.Parameters["View"].SetValue(View);
             Effect.Parameters["Projection"].SetValue(Projection);
             Effect.Parameters["DiffuseColor"].SetValue(Color.Black.ToVector3());
@@ -181,19 +177,19 @@ namespace TGC.MonoGame.TP.TGCGame
                 Effect.Parameters["World"].SetValue(World);
                 mesh.Draw();
             }
-
-            var rotationMatrix2 = Matrix.CreateRotationY(Rotation);
-            OtherEffect.Parameters["View"].SetValue(View);
-            OtherEffect.Parameters["Projection"].SetValue(Projection);
-            OtherEffect.Parameters["DiffuseColor"].SetValue(Color.DarkBlue.ToVector3());
-            foreach (var carmesh in RaceCarModel.Meshes)
+            */
+            foreach (ModelMesh mesh in RaceCarModel.Meshes)
             {
-                RaceCarWorld = carmesh.ParentBone.Transform * rotationMatrix2;
-                // Si lo seteo a RaceCarWorld no anda por arte de magia
-                OtherEffect.Parameters["World"].SetValue(World);
-                carmesh.Draw();
+                foreach (BasicEffect effect in mesh.Effects)
+                {
+                    effect.World = World * rotationMatrix;
+                    effect.View = View;
+                    effect.Projection = Projection;
+                }
+
+                mesh.Draw();
             }
-            
+
             //  No anda
             // RaceCarModel.Draw(RaceCarWorld * rotationMatrix, View, Projection);
             // Calculate the camera matrices.
