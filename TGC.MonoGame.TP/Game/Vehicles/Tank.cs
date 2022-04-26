@@ -2,11 +2,10 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-using TGC.MonoGame.TP.TGCGame;
 using TGC.MonoGame.TP.Cameras;
 using TGC.MonoGame.TP.Models;
 
-namespace TGC.MonoGame.TP.TGCGame
+namespace TGC.MonoGame.TP.TGCGameGame
 {
     public class Tank : DrawableGameComponent
     {

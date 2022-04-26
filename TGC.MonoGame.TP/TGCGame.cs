@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Input;
 
 using TGC.MonoGame.TP.Models;
 
-namespace TGC.MonoGame.TP.TGCGame
+namespace TGC.MonoGame.TP
 {
     /// <summary>
     ///     Esta es la clase principal  del juego.
@@ -44,22 +44,14 @@ namespace TGC.MonoGame.TP.TGCGame
         /// <summary>
         ///     Sample background color.
         /// </summary>
-        public Color Background { get; set; }
-
         private GraphicsDeviceManager Graphics { get; }
         private SpriteBatch SpriteBatch { get; set; }
         private Model Model { get; set; }
-        private Model RaceCarModel { get; set; }
-        private Matrix RaceCarWorld { get; set; }
-        private TankModel TankModel { get; set; }
-        private Tank Tank { get; set; }
         private Effect Effect { get; set; }
-        private Effect OtherEffect { get; set; }
-        private float Rotation { get; set; }
         private Matrix World { get; set; }
-        private Matrix TankWorld { get; set; }
         private Matrix View { get; set; }
         private Matrix Projection { get; set; }
+        private VehicleModel[] Vehicles { get; set; }
 
         /// <summary>
         ///     Se llama una sola vez, al principio cuando se ejecuta el ejemplo.
@@ -77,17 +69,22 @@ namespace TGC.MonoGame.TP.TGCGame
             GraphicsDevice.BlendState = BlendState.Opaque;
             // Seria hasta aca.
 
+            // Configuro el tamaño de la pantalla
+            Graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width - 100;
+            Graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height - 100;
+            Graphics.ApplyChanges();
+
             // Configuramos nuestras matrices de la escena.
             World = Matrix.Identity;
-            View = Matrix.CreateLookAt(Vector3.UnitZ * 150, Vector3.Zero, Vector3.Up);
+            View = Matrix.CreateLookAt(Vector3.UnitZ * 1500, Vector3.Zero, Vector3.Up);
             Projection =
-                Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, GraphicsDevice.Viewport.AspectRatio, 1, 250);
+                Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, GraphicsDevice.Viewport.AspectRatio, 1, 5000);
 
-            TankModel = new TankModel();
-            TankWorld = Matrix.Identity;
-            // Tank = new Tank(this);
-
-            RaceCarWorld = Matrix.Identity;
+            Vehicles = new VehicleModel[200];
+            for (int i = 0; i < 200; i++)
+            {
+                Vehicles[i] = new VehicleModel();
+            }
 
             base.Initialize();
         }
@@ -104,24 +101,24 @@ namespace TGC.MonoGame.TP.TGCGame
 
             // Cargo el modelo del logo.
             //Model = Content.Load<Model>(ContentFolder3D + "tgc-logo/tgc-logo");
-            RaceCarModel = Content.Load<Model>(ContentFolder3D + "vehicles/CombatVehicle/Vehicle");
-            // TankModel.Load(Content.Load<Model>(ContentFolder3D + "vehicles/Tank/tank"));
-
-            // Tank.Initialize();
+            foreach (VehicleModel vehicle in Vehicles)
+            {
+                vehicle.Load(Content.Load<Model>(ContentFolder3D + "vehicles/CombatVehicle/Vehicle"));
+            }
+            //Vehicle.Load(Content.Load<Model>(ContentFolder3D + "vehicles/CombatVehicle/Vehicle"));
 
             // Cargo un efecto basico propio declarado en el Content pipeline.
             // En el juego no pueden usar BasicEffect de MG, deben usar siempre efectos propios.
-            Effect = Content.Load<Effect>(ContentFolderEffects + "BasicShader");
+            //Effect = Content.Load<Effect>(ContentFolderEffects + "BasicShader");
 
             // Asigno el efecto que cargue a cada parte del mesh.
             // Un modelo puede tener mas de 1 mesh internamente.
             /*
-            foreach (var mesh in RaceCarModel.Meshes)
+            foreach (var mesh in Model.Meshes)
                 // Un mesh puede tener mas de 1 mesh part (cada 1 puede tener su propio efecto).
             foreach (var meshPart in mesh.MeshParts)
                 meshPart.Effect = Effect;
             */
-
             base.LoadContent();
         }
 
@@ -139,18 +136,13 @@ namespace TGC.MonoGame.TP.TGCGame
                 //Salgo del juego.
                 Exit();
             
+            // Basado en el tiempo que paso.
             var time = Convert.ToSingle(gameTime.TotalGameTime.TotalSeconds);
-/* 
-            TankModel.WheelRotation = time * 5;
-            TankModel.SteerRotation = (float) Math.Sin(time * 0.75f) * 0.5f;
-            TankModel.TurretRotation = (float) Math.Sin(time * 0.333f) * 1.25f;
-            TankModel.CannonRotation = (float) Math.Sin(time * 0.25f) * 0.333f - 0.333f;
-            TankModel.HatchRotation = MathHelper.Clamp((float) Math.Sin(time * 2) * 2, -1, 0);
- */
-            // Basado en el tiempo que paso se va generando una rotacion.
-            Rotation += Convert.ToSingle(gameTime.ElapsedGameTime.TotalSeconds);
-
-            // Tank.Update(gameTime);
+            foreach (VehicleModel vehicle in Vehicles)
+            {
+                vehicle.Update(time);
+            }
+            //Rotation += Convert.ToSingle(gameTime.ElapsedGameTime.TotalSeconds);
 
             base.Update(gameTime);
         }
@@ -163,11 +155,12 @@ namespace TGC.MonoGame.TP.TGCGame
         {
             // Aca deberiamos poner toda la logia de renderizado del juego.
             GraphicsDevice.Clear(Color.DeepSkyBlue);
-
             // Para dibujar le modelo necesitamos pasarle informacion que el efecto esta esperando.
-            var rotationMatrix = Matrix.CreateRotationY(Rotation);
+
+            // Calculate the camera matrices.
 
             /*
+            var rotationMatrix = Matrix.CreateRotationY(Rotation);
             Effect.Parameters["View"].SetValue(View);
             Effect.Parameters["Projection"].SetValue(Projection);
             Effect.Parameters["DiffuseColor"].SetValue(Color.Black.ToVector3());
@@ -178,23 +171,11 @@ namespace TGC.MonoGame.TP.TGCGame
                 mesh.Draw();
             }
             */
-            foreach (ModelMesh mesh in RaceCarModel.Meshes)
+            for (int i = 0; i < 200; i++)
             {
-                foreach (BasicEffect effect in mesh.Effects)
-                {
-                    effect.World = World * rotationMatrix;
-                    effect.View = View;
-                    effect.Projection = Projection;
-                }
-
-                mesh.Draw();
+                VehicleModel vehicle = Vehicles[i];
+                vehicle.Draw(World + Matrix.CreateTranslation((100 - i) * 400, 0, 0), View, Projection);
             }
-
-            //  No anda
-            // RaceCarModel.Draw(RaceCarWorld * rotationMatrix, View, Projection);
-            // Calculate the camera matrices.
-            var time = Convert.ToSingle(gameTime.TotalGameTime.TotalSeconds);
-            // TankModel.Draw(TankWorld * Matrix.CreateRotationY(time * 0.1f), View, Projection);
         }
 
         /// <summary>
