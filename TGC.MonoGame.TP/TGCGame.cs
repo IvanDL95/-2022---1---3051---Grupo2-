@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 using TGC.MonoGame.TP.Models;
+using TGC.MonoGame.TP.Geometries.Textures;
 
 namespace TGC.MonoGame.TP
 {
@@ -53,6 +54,13 @@ namespace TGC.MonoGame.TP
         private Matrix Projection { get; set; }
         private VehicleModel[] Vehicles { get; set; }
         private WeaponModel[] Weapons { get; set; }
+
+        // A Quad to draw the floor
+        private QuadPrimitive Quad { get; set; }
+        // The Floor Texture
+        private Texture2D FloorTexture { get; set; }
+        // A Tiling Effect to repeat the floor and wall textures
+        private Effect TilingEffect { get; set; }
 
         /// <summary>
         ///     Se llama una sola vez, al principio cuando se ejecuta el ejemplo.
@@ -114,9 +122,15 @@ namespace TGC.MonoGame.TP
             }
             //Vehicle.Load(Content.Load<Model>(ContentFolder3D + "vehicles/CombatVehicle/Vehicle"));
 
+            // Create the Quad
+            Quad = new QuadPrimitive(GraphicsDevice);
+            FloorTexture = Content.Load<Texture2D>(ContentFolderTextures + "floor/adoquin");
+
             // Cargo un efecto basico propio declarado en el Content pipeline.
             // En el juego no pueden usar BasicEffect de MG, deben usar siempre efectos propios.
-            //Effect = Content.Load<Effect>(ContentFolderEffects + "BasicShader");
+            //Effect = Content.Load<Effect>(ContentFolderEffects + "BasicEffect");
+            TilingEffect = Content.Load<Effect>(ContentFolderEffects + "TextureTiling");
+            TilingEffect.Parameters["Tiling"].SetValue(new Vector2(0f, 0f));
 
             // Asigno el efecto que cargue a cada parte del mesh.
             // Un modelo puede tener mas de 1 mesh internamente.
@@ -181,15 +195,20 @@ namespace TGC.MonoGame.TP
                 Effect.Parameters["World"].SetValue(World);
                 mesh.Draw();
             }
-            */
+            */            
             for (int i = 0; i < 100; i++)
             {
                 VehicleModel vehicle = Vehicles[i];
-                vehicle.Draw(World + Matrix.CreateTranslation((50 - i) * 400, 0, 0), View, Projection);
+                vehicle.Draw(World + Matrix.CreateTranslation((50f - i) * 400f, 0, 0), View, Projection);
 
                 WeaponModel weapon = Weapons[i];
-                weapon.Draw(World + Matrix.CreateTranslation((50 - i) * 400, 110, 0), View, Projection);
+                weapon.Draw(World + Matrix.CreateTranslation((50f - i) * 400f, 110f, 0), View, Projection);
             }
+
+            // Set the WorldViewProjection and Texture for the Floor and draw it
+            TilingEffect.Parameters["WorldViewProjection"].SetValue(World * (View * Projection));
+            TilingEffect.Parameters["Texture"].SetValue(FloorTexture);
+            Quad.Draw(TilingEffect);
         }
 
         /// <summary>
