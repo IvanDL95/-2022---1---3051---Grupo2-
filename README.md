@@ -35,9 +35,9 @@ Afuera del mundo Windows, vas a necesitar la ayudar de [Wine](https://www.winehq
 Los recursos usados se almacenan utilizando [Git LFS](https://git-lfs.github.com), con lo cual antes de clonar el repositorio les conviene tenerlo instalado así es automático el pull o si ya lo tienen pueden hacer ```git lfs pull```.
 
 ## Integrantes
-Legajo       |  Apellido, Nombre
------------- | -------------
-158907-6     | De Luca, Iván
+Legajo       |  Apellido, Nombre | Email
+------------ | ----------------- | ------
+158907-6     | De Luca, Iván     | ivandeluca.95@gmail.com
 
 ## Capturas
 ![screenshot1](https://github.com/tgc-utn/tgc-monogame-tp/blob/master/TGC.MonoGame.TP/Icon.bmp)
