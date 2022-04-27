@@ -13,11 +13,11 @@
 
 #---------------------------------- Content ---------------------------------#
 
-#begin ../../../tgc-monogame-samples/TGC.MonoGame.Samples/Content/Effects/BasicShader.fx
+#begin Effects/BasicShader.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:../../../tgc-monogame-samples/TGC.MonoGame.Samples/Content/Effects/BasicShader.fx;Effects/BasicShader.fx
+/build:Effects/BasicShader.fx
 
 #begin Effects/AlphaBlending.fx
 /importer:EffectImporter
