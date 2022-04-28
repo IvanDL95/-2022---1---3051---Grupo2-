@@ -2,13 +2,14 @@ name: Release TP
 
 on:
   push:
-    tags:
-    - 'v[0-9]+.[0-9]+'
+    branches:
+      - master
   pull_request:
     branches:    
       - 'releases/[0-9]+.[0-9]+'
 
 env:
+  GAME_NAME: Grupo 2
   PROJECT_NAME: Grupo_2
   PROJECT_PATH: TGC.MonoGame.TP
   PRERELEASE: true
@@ -17,6 +18,7 @@ jobs:
   build-project:
     name: Publish Project
     runs-on: windows-latest
+    if: startsWith(github.ref, 'refs/tags/v')
 
     env:
       DOTNET_NOLOGO: true
@@ -47,22 +49,6 @@ jobs:
         name: dotnet-build
         path: artifacts/
 
-  version:
-    name: Get and upload version number
-    runs-on: ubuntu-20.04
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-    - name: Get version from tag
-      run: |
-        echo $(git describe --tags --abbrev=0) > version.txt
-    - name: Upload version
-      uses: actions/upload-artifact@v3
-      with:
-        name: release-version
-        path: version.txt
-
   release-project:
     name: Release Project
     runs-on: ubuntu-20.04
@@ -72,27 +58,38 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
-    - name: Download artifacts
-      uses: actions/download-artifact@v3
+    - name: Extract tag name
+      id: release_tag
+      uses: actions/github-script@v6
+      with:
+        script: |
+          return context.payload.ref.replace(/refs\/tags\//, '');
+        result-encoding: string
     - name: Retrieve version
       run: |
-        echo "TAGVERSION=$(cat release-version/version.txt | tail -c +2)" >> $GITHUB_ENV
+        TAGVERSION="${{steps.release_tag.outputs.result}}"
+        echo "TAGVERSION=${TAGVERSION:1}" >> $GITHUB_ENV
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: dotnet-build
     - name: Package release
-      run: |
-        chmod 755 dotnet-build/windows/${{ env.PROJECT_PATH }}.exe dotnet-build/linux/${{ env.PROJECT_PATH }} dotnet-build/osx/${{ env.PROJECT_PATH }}
-        echo dotnet-build/windows dotnet-build/linux dotnet-build/osx | xargs -n 1 cp dotnet-build/LICENSE dotnet-build/README.md
-        mv dotnet-build/windows ${{ env.PROJECT_NAME }} && zip -r release-windows.zip ${{ env.PROJECT_NAME }} && rm -rf ${{ env.PROJECT_NAME }}
-        mv dotnet-build/linux ${{ env.PROJECT_NAME }} && zip -r release-linux.zip ${{ env.PROJECT_NAME }} && rm -rf ${{ env.PROJECT_NAME }}
-        mv dotnet-build/osx ${{ env.PROJECT_NAME }} && zip -r release-osx.zip ${{ env.PROJECT_NAME }} && rm -rf ${{ env.PROJECT_NAME }}
+      run: |  # xargs ejecuta 1 argumento recibido a la vez, n veces y reemplaza los % por el argumento.
+        chmod 755 linux/${{ env.PROJECT_PATH }} osx/${{ env.PROJECT_PATH }}
+        ls --ignore=LICENSE --ignore=README.md | xargs -I % zip --junk-paths release-%.zip LICENSE README.md
+        rm LICENSE README.md
+        mv windows ${{ env.PROJECT_PATH }} && zip --grow --recurse-paths --move release-windows.zip ${{ env.PROJECT_PATH }}
+        mv osx ${{ env.PROJECT_PATH }} && zip --grow --recurse-paths --move release-osx.zip ${{ env.PROJECT_PATH }}
+        mv linux ${{ env.PROJECT_PATH }} && zip --grow --recurse-paths --move release-linux.zip ${{ env.PROJECT_PATH }}
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
       with:
         tag_name: v${{ env.TAGVERSION }}
-        release_name: Release Versión ${{ env.TAGVERSION }}
+        release_name: v${{ env.TAGVERSION }}
         body: |
-          TGC ${{ env.PROJECT_NAME }} - Versión ${{ env.TAGVERSION }}  
-
+          ${{ env.GAME_NAME }} - Versión ${{ env.TAGVERSION }}
+          
           Integrantes:
           - Iván De Luca
           - Etc. Etc.
