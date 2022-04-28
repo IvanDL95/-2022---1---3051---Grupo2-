@@ -4,13 +4,16 @@ on:
   push:
     branches: [ develop ]
   pull_request:
-    branches: [ develop ]
+    branches: [ develop, master ]
 
 jobs:
   build-windows:
     name: Build Windows
     runs-on: windows-latest
-
+    env:
+      DOTNET_NOLOGO: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
+a
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -20,10 +23,6 @@ jobs:
       uses: actions/setup-dotnet@v2
       with:
         dotnet-version: 3.1.x
-    - name: Setup MonoGame
-      run: |
-        dotnet tool install --global dotnet-mgcb-editor
-        mgcb-editor --register
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
