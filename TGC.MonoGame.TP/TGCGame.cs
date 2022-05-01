@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 using TGC.MonoGame.TP.Models;
+using TGC.MonoGame.TP.Cameras;
 using TGC.MonoGame.TP.Geometries.Textures;
 
 namespace TGC.MonoGame.TP
@@ -50,8 +51,7 @@ namespace TGC.MonoGame.TP
         private Model Model { get; set; }
         private Effect Effect { get; set; }
         private Matrix World { get; set; }
-        private Matrix View { get; set; }
-        private Matrix Projection { get; set; }
+        private Camera GameCamera { get; set; }
         private VehicleModel[] Vehicles { get; set; }
         private WeaponModel[] Weapons { get; set; }
 
@@ -85,9 +85,16 @@ namespace TGC.MonoGame.TP
 
             // Configuramos nuestras matrices de la escena.
             World = Matrix.Identity;
-            View = Matrix.CreateLookAt(Vector3.UnitZ * 1500, Vector3.Zero, Vector3.Up);
-            Projection =
-                Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, GraphicsDevice.Viewport.AspectRatio, 1, 5000);
+            GameCamera = new IsometricCamera(
+                GraphicsDevice.Viewport.AspectRatio,
+                Vector3.One * 250f,
+                -Vector3.Normalize(Vector3.One),
+                Vector3.Up
+            );
+
+            // View = Matrix.CreateLookAt(Vector3.UnitZ * 1500, Vector3.Zero, Vector3.Up);
+            // Projection =
+            //     Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, GraphicsDevice.Viewport.AspectRatio, 1, 5000);
 
             Vehicles = new VehicleModel[100];
             Weapons = new WeaponModel[100];
@@ -199,14 +206,22 @@ namespace TGC.MonoGame.TP
             for (int i = 0; i < 100; i++)
             {
                 VehicleModel vehicle = Vehicles[i];
-                vehicle.Draw(World + Matrix.CreateTranslation((50f - i) * 400f, 0, 0), View, Projection);
+                vehicle.Draw(
+                    World + Matrix.CreateTranslation((50f - i) * 400f, 0, 0),
+                    GameCamera.View,
+                    GameCamera.Projection
+                );
 
                 WeaponModel weapon = Weapons[i];
-                weapon.Draw(World + Matrix.CreateTranslation((50f - i) * 400f, 110f, 0), View, Projection);
+                weapon.Draw(
+                    World + Matrix.CreateTranslation((50f - i) * 400f, 110f, 0),
+                    GameCamera.View,
+                    GameCamera.Projection
+                );
             }
 
             // Set the WorldViewProjection and Texture for the Floor and draw it
-            TilingEffect.Parameters["WorldViewProjection"].SetValue(World * (View * Projection));
+            TilingEffect.Parameters["WorldViewProjection"].SetValue(World * (GameCamera.View * GameCamera.Projection));
             TilingEffect.Parameters["Texture"].SetValue(FloorTexture);
             Quad.Draw(TilingEffect);
         }

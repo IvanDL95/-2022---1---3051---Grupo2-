@@ -34,7 +34,7 @@ namespace TGC.MonoGame.TP.TGCGameGame
         /// </summary>
         public override void Initialize()
         {
-            Camera = new StaticCamera(GraphicsDevice.Viewport.AspectRatio, Vector3.One * 250f, -Vector3.Normalize(Vector3.One), Vector3.Up);
+            Camera = new IsometricCamera(GraphicsDevice.Viewport.AspectRatio, Vector3.One * 250f, -Vector3.Normalize(Vector3.One), Vector3.Up);
             LoadContent();
             base.Initialize();
         }

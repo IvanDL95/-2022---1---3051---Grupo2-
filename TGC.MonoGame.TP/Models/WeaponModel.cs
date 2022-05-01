@@ -59,6 +59,6 @@ namespace TGC.MonoGame.TP.Models
 
         private Effect Effect { get; set; }
 
-        #endregion Properties
+        #endregion Fields
     }
 }
