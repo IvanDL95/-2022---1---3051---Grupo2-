@@ -47,6 +47,10 @@ namespace TGC.MonoGame.TP.Cameras
 
         #endregion Constants
 
+        public Camera(Frustum frustum) : this(frustum.AspectRatio, frustum.NearPlane, frustum.FarPlane, frustum.FieldOfView)
+        {
+        }
+
         public Camera(
             float aspectRatio,
             float nearPlaneDistance = DefaultNearPlaneDistance,
@@ -57,7 +61,7 @@ namespace TGC.MonoGame.TP.Cameras
 
         public Camera(float aspectRatio, float nearPlaneDistance, float farPlaneDistance, float fieldOfViewDegrees)
         {
-            ProjectionFrustum = new Frustum(aspectRatio,  nearPlaneDistance, farPlaneDistance, fieldOfViewDegrees);
+            ProjectionFrustum = new Frustum(aspectRatio, nearPlaneDistance, farPlaneDistance, fieldOfViewDegrees);
             BuildProjection(aspectRatio, nearPlaneDistance, farPlaneDistance, fieldOfViewDegrees);
         }
 

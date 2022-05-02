@@ -36,7 +36,7 @@ namespace TGC.MonoGame.TP.Models
         public void Update(float elapsedTime)
         {
             // Basado en el tiempo que paso se va generando una rotacion.
-            //Rotation = Matrix.CreateRotationY(elapsedTime);
+            Rotation = Matrix.CreateRotationY(elapsedTime);
         }
 
         public void Draw(Matrix World, Matrix View, Matrix Projection)
@@ -46,7 +46,7 @@ namespace TGC.MonoGame.TP.Models
             {
                 foreach (BasicEffect effect in mesh.Effects)
                 {
-                    effect.World = World * 1;
+                    effect.World = World * Rotation;
                     effect.View = View;
                     effect.Projection = Projection;
                 }

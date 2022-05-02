@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -28,6 +29,8 @@ namespace TGC.MonoGame.TP
         public const string ContentFolderSpriteFonts = "SpriteFonts/";
         public const string ContentFolderTextures = "Textures/";
 
+        public const int CarsCount = 10;
+
         /// <summary>
         ///     Constructor del juego.
         /// </summary>
@@ -48,12 +51,8 @@ namespace TGC.MonoGame.TP
         /// </summary>
         private GraphicsDeviceManager Graphics { get; }
         private SpriteBatch SpriteBatch { get; set; }
-        private Model Model { get; set; }
-        private Effect Effect { get; set; }
-        private Matrix World { get; set; }
         private Camera GameCamera { get; set; }
-        private VehicleModel[] Vehicles { get; set; }
-        private WeaponModel[] Weapons { get; set; }
+        private CombatVehicle[] CombatVehicles { get; set; }
 
         // A Quad to draw the floor
         private QuadPrimitive Quad { get; set; }
@@ -84,24 +83,16 @@ namespace TGC.MonoGame.TP
             Graphics.ApplyChanges();
 
             // Configuramos nuestras matrices de la escena.
-            World = Matrix.Identity;
             GameCamera = new IsometricCamera(
                 GraphicsDevice.Viewport.AspectRatio,
-                Vector3.One * 250f,
-                -Vector3.Normalize(Vector3.One),
-                Vector3.Up
+                Vector3.One * 500f,
+                -Vector3.Normalize(Vector3.One)
             );
 
-            // View = Matrix.CreateLookAt(Vector3.UnitZ * 1500, Vector3.Zero, Vector3.Up);
-            // Projection =
-            //     Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, GraphicsDevice.Viewport.AspectRatio, 1, 5000);
-
-            Vehicles = new VehicleModel[100];
-            Weapons = new WeaponModel[100];
-            for (int i = 0; i < 100; i++)
+            CombatVehicles = new CombatVehicle[CarsCount];
+            for (int i = 0; i < CarsCount; i++)
             {
-                Vehicles[i] = new VehicleModel();
-                Weapons[i] = new WeaponModel();
+                CombatVehicles[i] = new CombatVehicle(Content);
             }
 
             base.Initialize();
@@ -117,16 +108,15 @@ namespace TGC.MonoGame.TP
             // Aca es donde deberiamos cargar todos los contenido necesarios antes de iniciar el juego.
             SpriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // Cargo el modelo del logo.
-            //Model = Content.Load<Model>(ContentFolder3D + "tgc-logo/tgc-logo");
-            for (int i = 0; i < 100; i++)
-            {
-                VehicleModel vehicle = Vehicles[i];
-                vehicle.Load(Content.Load<Model>(ContentFolder3D + "vehicles/CombatVehicle/Vehicle"));
+            // Debug.WriteLine("Verbose Console API");
 
-                WeaponModel weapon = Weapons[i];
-                weapon.Load(Content.Load<Model>(ContentFolder3D + "vehicles/CombatVehicle/Weapons"));
+            // Cargo el modelo del vehículo.
+            for (int i = 0; i < CarsCount; i++)
+            {
+                CombatVehicle vehicle = CombatVehicles[i];
+                vehicle.Load(-Vector3.UnitX * (((CarsCount / 2) - i) * 400f));
             }
+
             //Vehicle.Load(Content.Load<Model>(ContentFolder3D + "vehicles/CombatVehicle/Vehicle"));
 
             // Create the Quad
@@ -166,15 +156,13 @@ namespace TGC.MonoGame.TP
             
             // Basado en el tiempo que paso.
             var time = Convert.ToSingle(gameTime.TotalGameTime.TotalSeconds);
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < CarsCount; i++)
             {
-                VehicleModel vehicle = Vehicles[i];
+                CombatVehicle vehicle = CombatVehicles[i];
                 vehicle.Update(time);
-
-                WeaponModel weapon = Weapons[i];
-                weapon.Update(time);
             }
-            //Rotation += Convert.ToSingle(gameTime.ElapsedGameTime.TotalSeconds);
+
+            GameCamera.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -186,7 +174,7 @@ namespace TGC.MonoGame.TP
         protected override void Draw(GameTime gameTime)
         {
             // Aca deberiamos poner toda la logia de renderizado del juego.
-            GraphicsDevice.Clear(Color.DeepSkyBlue);
+            GraphicsDevice.Clear(Color.Black);
             // Para dibujar le modelo necesitamos pasarle informacion que el efecto esta esperando.
 
             // Calculate the camera matrices.
@@ -202,26 +190,15 @@ namespace TGC.MonoGame.TP
                 Effect.Parameters["World"].SetValue(World);
                 mesh.Draw();
             }
-            */            
-            for (int i = 0; i < 100; i++)
+            */
+            for (int i = 0; i < CarsCount; i++)
             {
-                VehicleModel vehicle = Vehicles[i];
-                vehicle.Draw(
-                    World + Matrix.CreateTranslation((50f - i) * 400f, 0, 0),
-                    GameCamera.View,
-                    GameCamera.Projection
-                );
-
-                WeaponModel weapon = Weapons[i];
-                weapon.Draw(
-                    World + Matrix.CreateTranslation((50f - i) * 400f, 110f, 0),
-                    GameCamera.View,
-                    GameCamera.Projection
-                );
+                CombatVehicle vehicle = CombatVehicles[i];
+                vehicle.Draw(GameCamera.View, GameCamera.Projection);
             }
 
             // Set the WorldViewProjection and Texture for the Floor and draw it
-            TilingEffect.Parameters["WorldViewProjection"].SetValue(World * (GameCamera.View * GameCamera.Projection));
+            TilingEffect.Parameters["WorldViewProjection"].SetValue(Matrix.Identity * (GameCamera.View * GameCamera.Projection));
             TilingEffect.Parameters["Texture"].SetValue(FloorTexture);
             Quad.Draw(TilingEffect);
         }
