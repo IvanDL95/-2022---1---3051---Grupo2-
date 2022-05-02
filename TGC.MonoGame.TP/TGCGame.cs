@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Input;
 
 using TGC.MonoGame.TP.Models;
 using TGC.MonoGame.TP.Cameras;
+using TGC.MonoGame.TP.Player;
 using TGC.MonoGame.TP.Geometries.Textures;
 
 namespace TGC.MonoGame.TP
@@ -29,7 +30,7 @@ namespace TGC.MonoGame.TP
         public const string ContentFolderSpriteFonts = "SpriteFonts/";
         public const string ContentFolderTextures = "Textures/";
 
-        public const int CarsCount = 10;
+        public const int CarsCount = 1;
 
         /// <summary>
         ///     Constructor del juego.
@@ -52,7 +53,8 @@ namespace TGC.MonoGame.TP
         private GraphicsDeviceManager Graphics { get; }
         private SpriteBatch SpriteBatch { get; set; }
         private Camera GameCamera { get; set; }
-        private CombatVehicle[] CombatVehicles { get; set; }
+        private CombatVehicle PlayerVehicle { get; set; }
+        private PlayerInput PlayerInput { get; set; }
 
         // A Quad to draw the floor
         private QuadPrimitive Quad { get; set; }
@@ -85,15 +87,12 @@ namespace TGC.MonoGame.TP
             // Configuramos nuestras matrices de la escena.
             GameCamera = new IsometricCamera(
                 GraphicsDevice.Viewport.AspectRatio,
-                Vector3.One * 500f,
+                Vector3.One * 2000f,
                 -Vector3.Normalize(Vector3.One)
             );
 
-            CombatVehicles = new CombatVehicle[CarsCount];
-            for (int i = 0; i < CarsCount; i++)
-            {
-                CombatVehicles[i] = new CombatVehicle(Content);
-            }
+            PlayerVehicle = new CombatVehicle(Content);
+            PlayerInput = new PlayerInput(PlayerVehicle);
 
             base.Initialize();
         }
@@ -111,11 +110,7 @@ namespace TGC.MonoGame.TP
             // Debug.WriteLine("Verbose Console API");
 
             // Cargo el modelo del vehículo.
-            for (int i = 0; i < CarsCount; i++)
-            {
-                CombatVehicle vehicle = CombatVehicles[i];
-                vehicle.Load(-Vector3.UnitX * (((CarsCount / 2) - i) * 400f));
-            }
+            PlayerVehicle.Load(Vector3.Zero);
 
             //Vehicle.Load(Content.Load<Model>(ContentFolder3D + "vehicles/CombatVehicle/Vehicle"));
 
@@ -148,21 +143,25 @@ namespace TGC.MonoGame.TP
         protected override void Update(GameTime gameTime)
         {
             // Aca deberiamos poner toda la logica de actualizacion del juego.
+            KeyboardState kbState = Keyboard.GetState();
 
             // Capturar Input teclado
-            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+            if (kbState.IsKeyDown(Keys.Escape))
                 //Salgo del juego.
                 Exit();
             
             // Basado en el tiempo que paso.
             var time = Convert.ToSingle(gameTime.TotalGameTime.TotalSeconds);
-            for (int i = 0; i < CarsCount; i++)
-            {
-                CombatVehicle vehicle = CombatVehicles[i];
-                vehicle.Update(time);
-            }
+            var elapsedTime = Convert.ToSingle(gameTime.ElapsedGameTime.TotalSeconds);
+
+            PlayerInput.Update(elapsedTime, kbState);
+            PlayerVehicle.Update(elapsedTime);
 
             GameCamera.Update(gameTime);
+
+            Debug.WriteLine("Car World forward: " + PlayerVehicle.World.Forward);
+            Debug.WriteLine("Car Speed: " + PlayerVehicle.Speed);
+            Debug.WriteLine("Car Rotation: " + PlayerVehicle.Rotation);
 
             base.Update(gameTime);
         }
@@ -191,12 +190,7 @@ namespace TGC.MonoGame.TP
                 mesh.Draw();
             }
             */
-            for (int i = 0; i < CarsCount; i++)
-            {
-                CombatVehicle vehicle = CombatVehicles[i];
-                vehicle.Draw(GameCamera.View, GameCamera.Projection);
-            }
-
+            PlayerVehicle.Draw(GameCamera.View, GameCamera.Projection);
             // Set the WorldViewProjection and Texture for the Floor and draw it
             TilingEffect.Parameters["WorldViewProjection"].SetValue(Matrix.Identity * (GameCamera.View * GameCamera.Projection));
             TilingEffect.Parameters["Texture"].SetValue(FloorTexture);

@@ -43,7 +43,7 @@ namespace TGC.MonoGame.TP.Cameras
 
         public const float DefaultFieldOfView = MathHelper.PiOver4;
         public const float DefaultNearPlaneDistance = 0.1f;
-        public const float DefaultFarPlaneDistance = 3000;
+        public const float DefaultFarPlaneDistance = 5000f;
 
         #endregion Constants
 

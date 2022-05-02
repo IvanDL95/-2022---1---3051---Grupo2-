@@ -14,6 +14,12 @@ namespace TGC.MonoGame.TP.Models
 {
     class CombatVehicle
     {
+        public readonly float Acceleration = 1000f;
+
+        public readonly float RotationSpeed = 5f;
+
+        public readonly float MaxSpeed = 50f;
+
         private const float WeaponOffset = 60f;
 
         public CombatVehicle(ContentManager content)
@@ -32,6 +38,8 @@ namespace TGC.MonoGame.TP.Models
 
             // Starting position
             Position = position;
+            Rotation = Vector3.Zero;
+            Speed = 0f;
         }
 
         /// <summary>
@@ -42,7 +50,9 @@ namespace TGC.MonoGame.TP.Models
         public void Update(float elapsedTime)
         {
             // Basado en el tiempo que paso se va generando una rotacion.
-            Rotation = elapsedTime * Vector3.UnitY;
+            float deltaPosition = (Speed / 2) * elapsedTime;
+            Position += new Vector3(World.Left.X, 0f, World.Left.Z) * deltaPosition;
+
             World = Matrix.CreateFromYawPitchRoll(Rotation.Y, Rotation.Z, Rotation.X) * Matrix.CreateTranslation(Position);
         }
 
@@ -95,6 +105,8 @@ namespace TGC.MonoGame.TP.Models
         /// </summary>
         private Model Weapon;
 
+        public float Speed{ get; set; }
+
         /// <summary>
         ///    Position in the vehicle world.
         /// </summary>a
@@ -103,13 +115,13 @@ namespace TGC.MonoGame.TP.Models
         /// <summary>
         ///     Rotation in radians per axis.
         /// </summary>a
-        private Vector3 Rotation { get; set; }
+        public Vector3 Rotation { get; set; }
 
         /// <summary>
         ///    The World matrix which contain the current transformation.
         ///    Scale * Rotation * Translation
         /// </summary>
-        private Matrix World { get; set; }
+        public Matrix World { get; private set; }
 
         private Effect Effect { get; set; }
 
