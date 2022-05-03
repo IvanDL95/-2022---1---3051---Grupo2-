@@ -38,6 +38,7 @@ Los recursos usados se almacenan utilizando [Git LFS](https://git-lfs.github.com
 Legajo       |  Apellido, Nombre | Email
 ------------ | ----------------- | ------
 158907-6     | De Luca, Iván     | ivandeluca.95@gmail.com
+171767-4     | Wyse Ezequiel     | ezequiel_wyse@hotmail.com
 
 ## Capturas
 ![screenshot1](https://github.com/tgc-utn/tgc-monogame-tp/blob/master/TGC.MonoGame.TP/Icon.bmp)
