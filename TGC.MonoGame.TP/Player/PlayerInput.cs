@@ -25,7 +25,10 @@ namespace TGC.MonoGame.TP.Player
 
             if (keyboardState.IsKeyDown(Keys.S))
             {
-                PlayerVehicle.Speed -= elapsedTime * PlayerVehicle.Acceleration;
+                if(PlayerVehicle.Speed > 0)
+                    PlayerVehicle.Speed += elapsedTime * -PlayerVehicle.Acceleration;
+                else
+                    PlayerVehicle.Speed += elapsedTime * -PlayerVehicle.Acceleration / 2;
             }
 
             if (keyboardState.IsKeyDown(Keys.A))

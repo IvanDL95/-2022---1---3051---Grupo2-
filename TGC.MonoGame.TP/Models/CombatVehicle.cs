@@ -14,13 +14,15 @@ namespace TGC.MonoGame.TP.Models
 {
     class CombatVehicle
     {
-        public readonly float Acceleration = 1000f;
+        public readonly float Acceleration = 2500f;
 
         public readonly float RotationSpeed = 5f;
 
-        public readonly float MaxSpeed = 50f;
+        public readonly float MaxSpeed = 5000f;
 
         private const float WeaponOffset = 60f;
+
+        private const float FrictionCoefficient = 0.5f;
 
         public CombatVehicle(ContentManager content)
         {
@@ -49,10 +51,12 @@ namespace TGC.MonoGame.TP.Models
         /// </summary>
         public void Update(float elapsedTime)
         {
-            // Basado en el tiempo que paso se va generando una rotacion.
-            float deltaPosition = (Speed / 2) * elapsedTime;
-            Position += new Vector3(World.Left.X, 0f, World.Left.Z) * deltaPosition;
-
+            Vector3 forward = World.Left;
+            Vector3 friction = forward * FrictionCoefficient * 10f;
+            Speed += Speed > 0 ? -(friction).Length() : Speed > 0 ? friction.Length() : 0;
+            if(Speed > MaxSpeed) Speed = MaxSpeed;
+            if(Speed < -MaxSpeed / 2) Speed = (-MaxSpeed / 2);
+            Position += forward * (Speed * elapsedTime);
             World = Matrix.CreateFromYawPitchRoll(Rotation.Y, Rotation.Z, Rotation.X) * Matrix.CreateTranslation(Position);
         }
 
@@ -62,6 +66,9 @@ namespace TGC.MonoGame.TP.Models
             Matrix WeaponWorld = World * Matrix.CreateTranslation(Vector3.UnitY * WeaponOffset);
             // Vehicle.Draw(World, View, Projection);
             // Weapon.Draw(WeaponWorld, View, Projection);
+
+            // Asigno el efecto que cargue a cada parte del mesh.
+            // Un modelo puede tener mas de 1 mesh internamente.
             // Para dibujar el modelo necesitamos pasarle informacion que el efecto esta esperando.
             foreach (ModelMesh mesh in Vehicle.Meshes)
             {

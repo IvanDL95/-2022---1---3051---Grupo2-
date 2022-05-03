@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Input;
 using TGC.MonoGame.TP.Models;
 using TGC.MonoGame.TP.Cameras;
 using TGC.MonoGame.TP.Player;
+using TGC.MonoGame.TP.Scene;
 using TGC.MonoGame.TP.Geometries.Textures;
 
 namespace TGC.MonoGame.TP
@@ -56,10 +57,7 @@ namespace TGC.MonoGame.TP
         private CombatVehicle PlayerVehicle { get; set; }
         private PlayerInput PlayerInput { get; set; }
 
-        // A Quad to draw the floor
-        private QuadPrimitive Quad { get; set; }
-        // The Floor Texture
-        private Texture2D FloorTexture { get; set; }
+        private Floor Floor { get; set; }
         // A Tiling Effect to repeat the floor and wall textures
         private Effect TilingEffect { get; set; }
 
@@ -87,12 +85,13 @@ namespace TGC.MonoGame.TP
             // Configuramos nuestras matrices de la escena.
             GameCamera = new IsometricCamera(
                 GraphicsDevice.Viewport.AspectRatio,
-                Vector3.One * 2000f,
+                Vector3.One * 1000f,
                 -Vector3.Normalize(Vector3.One)
             );
 
             PlayerVehicle = new CombatVehicle(Content);
             PlayerInput = new PlayerInput(PlayerVehicle);
+            Floor = new Floor(new QuadPrimitive(GraphicsDevice), 5000f);
 
             base.Initialize();
         }
@@ -115,23 +114,14 @@ namespace TGC.MonoGame.TP
             //Vehicle.Load(Content.Load<Model>(ContentFolder3D + "vehicles/CombatVehicle/Vehicle"));
 
             // Create the Quad
-            Quad = new QuadPrimitive(GraphicsDevice);
-            FloorTexture = Content.Load<Texture2D>(ContentFolderTextures + "floor/adoquin");
+            Floor.Load(Content.Load<Texture2D>(ContentFolderTextures + "floor/adoquin-2"));
 
             // Cargo un efecto basico propio declarado en el Content pipeline.
             // En el juego no pueden usar BasicEffect de MG, deben usar siempre efectos propios.
             //Effect = Content.Load<Effect>(ContentFolderEffects + "BasicEffect");
             TilingEffect = Content.Load<Effect>(ContentFolderEffects + "TextureTiling");
-            TilingEffect.Parameters["Tiling"].SetValue(new Vector2(0f, 0f));
+            TilingEffect.Parameters["Tiling"].SetValue(new Vector2(600f, 600f));
 
-            // Asigno el efecto que cargue a cada parte del mesh.
-            // Un modelo puede tener mas de 1 mesh internamente.
-            /*
-            foreach (var mesh in Model.Meshes)
-                // Un mesh puede tener mas de 1 mesh part (cada 1 puede tener su propio efecto).
-            foreach (var meshPart in mesh.MeshParts)
-                meshPart.Effect = Effect;
-            */
             base.LoadContent();
         }
 
@@ -192,9 +182,7 @@ namespace TGC.MonoGame.TP
             */
             PlayerVehicle.Draw(GameCamera.View, GameCamera.Projection);
             // Set the WorldViewProjection and Texture for the Floor and draw it
-            TilingEffect.Parameters["WorldViewProjection"].SetValue(Matrix.Identity * (GameCamera.View * GameCamera.Projection));
-            TilingEffect.Parameters["Texture"].SetValue(FloorTexture);
-            Quad.Draw(TilingEffect);
+            Floor.Draw(TilingEffect, GameCamera.View * GameCamera.Projection);
         }
 
         /// <summary>
