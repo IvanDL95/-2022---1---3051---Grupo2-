@@ -28,7 +28,7 @@ namespace TGC.MonoGame.TP.Cameras
         /// <inheritdoc />
         public override void Update(GameTime gameTime)
         {
-            // TODO - Follow car movement
+        
         }
 
         #region Fields
