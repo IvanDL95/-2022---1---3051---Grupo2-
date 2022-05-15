@@ -7,7 +7,6 @@ using Microsoft.Xna.Framework.Input;
 
 using TGC.MonoGame.TP.Models;
 using TGC.MonoGame.TP.Cameras;
-using TGC.MonoGame.TP.Player;
 using TGC.MonoGame.TP.Geometries.Textures;
 
 #endregion Using Statements
@@ -16,14 +15,12 @@ namespace TGC.MonoGame.TP.Scene
 {
     class Floor
     {
+        private Matrix World { get; set; }
+        public Effect Effect { get; set; }
         // A Quad to draw the floor - TODO hacerlo polimorfico tal vez
         private QuadPrimitive Quad { get; set; }
-
         // The Floor World
-        private Matrix World { get; set; }
-
-        // The Floor Texture
-        private Texture2D Texture { get; set; }
+        private Texture2D FloorTexture { get; set; }
 
         public Floor(QuadPrimitive quad, float scale)
         {
@@ -31,21 +28,16 @@ namespace TGC.MonoGame.TP.Scene
             World = Matrix.CreateScale(scale);
         }
 
-        public void Load(Texture2D texture)
+        public void Load(Texture2D texture, Effect effect)
         {
-            Texture = texture;
+            FloorTexture = texture;
+            Effect = effect;
         }
 
-        public void Update(float elapsedTime)
+        public void Draw(Matrix viewProjection)
         {
-            // ¯\_(ツ)_ /¯
-        }
-
-        public void Draw(Effect effect, Matrix viewProjection)
-        {
-            effect.Parameters["WorldViewProjection"].SetValue(World * viewProjection);
-            effect.Parameters["Texture"].SetValue(Texture);
-            Quad.Draw(effect);
+            Effect.Parameters["WorldViewProjection"].SetValue(World * viewProjection);
+            Quad.Draw(Effect);
         }
     }
 }
