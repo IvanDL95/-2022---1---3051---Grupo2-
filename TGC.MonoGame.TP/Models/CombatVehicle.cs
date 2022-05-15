@@ -12,7 +12,7 @@ using TGC.MonoGame.TP;
 
 namespace TGC.MonoGame.TP.Models
 {
-    class CombatVehicle
+    public class CombatVehicle
     {
         public readonly float Acceleration = 2500f;
 
@@ -95,7 +95,7 @@ namespace TGC.MonoGame.TP.Models
             }
         }
         
-        #region Fields
+        #region Properties
 
         /// <summary>
         ///    The XNA framework Content Manager.
