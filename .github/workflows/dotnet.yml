@@ -29,36 +29,8 @@ jobs:
       run: dotnet build --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal
-    - name: Upload build
-      uses: actions/upload-artifact@v3
-      with:
-        name: dotnet-build-${{ github.run_number }}-windows.zip
-        path: build
-
-  build-linux:
-    name: Build Linux
-    runs-on: windows-latest
-    env:
-      DOTNET_NOLOGO: true
-      DOTNET_CLI_TELEMETRY_OPTOUT: true
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-      with:
-        lfs: true
-    - name: Setup .NET Core SDK
-      uses: actions/setup-dotnet@v2
-      with:
-        dotnet-version: 3.1.x
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build -r linux-x64 --no-restore
-    - name: Test
-      run: dotnet test --runtime linux-x64 --no-build --verbosity normal
-    - name: Upload build
-      uses: actions/upload-artifact@v3
-      with:
-        name: dotnet-build-${{ github.run_number }}-linux.zip
-        path: build
+#    - name: Upload build
+#      uses: actions/upload-artifact@v3
+#      with:
+#        name: dotnet-build-${{ github.run_number }}-windows.zip
+#        path: build
