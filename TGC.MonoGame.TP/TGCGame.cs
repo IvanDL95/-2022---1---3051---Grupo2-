@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework.Input;
 
 using TGC.MonoGame.TP.Models;
 using TGC.MonoGame.TP.Cameras;
-using TGC.MonoGame.TP.Player;
+using TGC.MonoGame.TP.State;
 using TGC.MonoGame.TP.Scene;
 using TGC.MonoGame.TP.Geometries.Textures;
 
@@ -34,13 +34,12 @@ namespace TGC.MonoGame.TP
 
         private GraphicsDeviceManager Graphics { get; }
         private SpriteBatch SpriteBatch { get; set; }
-        private Camera GameCamera { get; set; }
+        public Camera GameCamera { get; set; }
         private CombatVehicle PlayerVehicle { get; set; }
         private PlayerInput PlayerInput { get; set; }
+        private StateManager StateManager;
 
-        private Floor Floor { get; set; }
-
-        private Effect TilingEffect { get; set; }
+        private GameScene Scene { get; set; }
 
         protected override void Initialize()
         {
@@ -56,13 +55,16 @@ namespace TGC.MonoGame.TP
 
             GameCamera = new IsometricCamera(
                 GraphicsDevice.Viewport.AspectRatio,
-                Vector3.One * 1000f,
-                -Vector3.Normalize(Vector3.One)
+                1000f
             );
 
             PlayerVehicle = new CombatVehicle(Content);
             PlayerInput = new PlayerInput(PlayerVehicle);
-            Floor = new Floor(new QuadPrimitive(GraphicsDevice), 5000f);
+
+            Components.Add(new GameScene(this, GameCamera));
+
+            Components.Add(StateManager = new StateManager(this));
+            Services.AddService(typeof(IStateService), StateManager);
 
             base.Initialize();
         }
@@ -71,11 +73,6 @@ namespace TGC.MonoGame.TP
         {
             SpriteBatch = new SpriteBatch(GraphicsDevice);
             PlayerVehicle.Load(Vector3.Zero);
-
-            Floor.Load(Content.Load<Texture2D>(ContentFolderTextures + "floor/adoquin-2"));
-
-            TilingEffect = Content.Load<Effect>(ContentFolderEffects + "TextureTiling");
-            TilingEffect.Parameters["Tiling"].SetValue(new Vector2(600f, 600f));
 
             base.LoadContent();
         }
@@ -93,11 +90,8 @@ namespace TGC.MonoGame.TP
             PlayerInput.Update(elapsedTime, kbState);
             PlayerVehicle.Update(elapsedTime);
 
+            // Camera gameCamera = Services.GetService<Camera>();
             GameCamera.Update(gameTime);
-
-            Debug.WriteLine("Car World forward: " + PlayerVehicle.World.Forward);
-            Debug.WriteLine("Car Speed: " + PlayerVehicle.Speed);
-            Debug.WriteLine("Car Rotation: " + PlayerVehicle.Rotation);
 
             base.Update(gameTime);
         }
@@ -105,7 +99,8 @@ namespace TGC.MonoGame.TP
         {
             GraphicsDevice.Clear(Color.Black);
             PlayerVehicle.Draw(GameCamera.View, GameCamera.Projection);
-            Floor.Draw(TilingEffect, GameCamera.View * GameCamera.Projection);
+
+            base.Draw(gameTime);
         }
 
         protected override void UnloadContent()

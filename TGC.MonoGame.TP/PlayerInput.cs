@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Input;
 
 using TGC.MonoGame.TP.Models;
 
-namespace TGC.MonoGame.TP.Player
+namespace TGC.MonoGame.TP
 {
     class PlayerInput
     {
