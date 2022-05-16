@@ -1,7 +1,5 @@
 #region Using Statements
 
-using System;
-using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TGC.MonoGame.TP.Models.Boxes;
@@ -12,7 +10,7 @@ using TGC.MonoGame.TP.Geometries.Textures;
 
 namespace TGC.MonoGame.TP.Scene
 {
-    public class GameScene : DrawableGameComponent
+    public class GameScene
     {
         #region Constants
 
@@ -27,63 +25,50 @@ namespace TGC.MonoGame.TP.Scene
         private Texture2D WoodenTexture { get; set; }
         private Texture2D CobbleTexture { get; set; }
 
-        // Camera to draw the scene
-        private Camera GameCamera { get; set; }
-
         private Floor AFuckingFloor { get; set; }
         private Effect TilingEffect { get; set; }
         private Effect TextureEffect { get; set; }
         private RegularBox[] SceneBoxList { get; set; }
         private RegularBox ASingleBox { get; set; }
 
-        /// <summary>
-        ///     Default constructor.
-        /// </summary>
-        /// <param name="game">The game.</param>
-        public GameScene(Game game, Camera gameCamera) : base(game)
-        {
-            GameCamera = gameCamera;
+        private TGCGame game;
+        private GraphicsDevice graphicsDevice;
+
+        public GameScene(TGCGame game, GraphicsDevice graphicsDevice) {
+            this.game = game;
+            this.graphicsDevice = graphicsDevice;
         }
 
-        public override void Initialize()
-        {
-            AFuckingFloor = new Floor(new QuadPrimitive(GraphicsDevice), FloorScale);
 
-            base.Initialize();
-        }
-
-        protected override void LoadContent()
+        public void Load()
         {
             // Load Textures
             // StonesTexture = Game.Content.Load<Texture2D>(TGCGame.ContentFolderTextures + "stones");
-            WoodenTexture = Game.Content.Load<Texture2D>(TGCGame.ContentFolderTextures + BoxTexture);
-            CobbleTexture = Game.Content.Load<Texture2D>(TGCGame.ContentFolderTextures + CobbleTextureName);
+            WoodenTexture = game.Content.Load<Texture2D>(TGCGame.ContentFolderTextures + BoxTexture);
+            CobbleTexture = game.Content.Load<Texture2D>(TGCGame.ContentFolderTextures + CobbleTextureName);
 
-            TilingEffect = Game.Content.Load<Effect>(TGCGame.ContentFolderEffects + "TextureTiling");
-            TextureEffect = Game.Content.Load<Effect>(TGCGame.ContentFolderEffects + "TextureBasic");
+            TilingEffect = game.Content.Load<Effect>(TGCGame.ContentFolderEffects + "TextureTiling");
+            TextureEffect = game.Content.Load<Effect>(TGCGame.ContentFolderEffects + "TextureBasic");
 
             TilingEffect.Parameters["Texture"].SetValue(CobbleTexture);
             TilingEffect.Parameters["Tiling"].SetValue(new Vector2(100f, 100f));
+            AFuckingFloor = new Floor(new QuadPrimitive(graphicsDevice), FloorScale);
             AFuckingFloor.Load(CobbleTexture, TilingEffect);
 
             var boxWorld = Matrix.CreateWorld(new Vector3(500f, 50f, 20f), Vector3.Forward, Vector3.Up);
 
-            ASingleBox = new RegularBox(Game, TextureEffect, boxWorld);
+            ASingleBox = new RegularBox(game, TextureEffect, boxWorld);
             ASingleBox.Effect.Parameters["Texture"].SetValue(WoodenTexture);
-
-            base.LoadContent();
         }
 
-        public override void Draw(GameTime gameTime)
+        public void Draw(GameTime gameTime, InGameCamera camera)
         {
-            Matrix viewProjection = GameCamera.View * GameCamera.Projection;
+            Matrix viewProjection = camera.View * camera.Projection;
 
             ASingleBox.Effect.Parameters["WorldViewProjection"].SetValue(ASingleBox.World * viewProjection);
             ASingleBox.Draw(gameTime);
 
             AFuckingFloor.Draw(viewProjection);
-
-            base.Draw(gameTime);
         }
     }
 }

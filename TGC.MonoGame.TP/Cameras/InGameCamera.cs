@@ -1,14 +1,9 @@
 using Microsoft.Xna.Framework;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace TGC.MonoGame.TP
+namespace TGC.MonoGame.TP.Cameras
 {
-    /// <summary>
-    /// Una camara que sigue objetos
-    /// </summary>
-    class FollowCamera
+    public class InGameCamera
     {
         private const float AxisDistanceToTarget = 1000f;
 
@@ -19,6 +14,8 @@ namespace TGC.MonoGame.TP
         public Matrix Projection { get; private set; }
 
         public Matrix View { get; private set; }
+        
+        private Matrix Followed { get; set; }
 
         private Vector3 CurrentRightVector { get; set; } = Vector3.Right;
 
@@ -26,7 +23,7 @@ namespace TGC.MonoGame.TP
 
         private Vector3 PastRightVector { get; set; } = Vector3.Right;
 
-        public FollowCamera(float aspectRatio)
+        public InGameCamera(float aspectRatio)
         {
             Projection = Matrix.CreatePerspectiveFieldOfView(MathF.PI / 3f, aspectRatio, 0.1f, 100000f);
         }
