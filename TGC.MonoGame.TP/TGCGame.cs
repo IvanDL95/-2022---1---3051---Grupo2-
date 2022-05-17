@@ -11,7 +11,13 @@ namespace TGC.MonoGame.TP
 {
     public class TGCGame : Game
     {
+        private GraphicsDeviceManager Graphics { get; }
+        private InGameCamera Camera { get; set; }
+        private Vehicle Vehicle { get; set; }
+        private GameScene Scene { get; set; }
         private BoundingBox[] Colliders { get; set; }
+
+        private Box Box { get; set; }
 
         public TGCGame()
         {
@@ -19,12 +25,6 @@ namespace TGC.MonoGame.TP
             Content.RootDirectory = TGCContent.ContentFolder;
             IsMouseVisible = true;
         }
-
-        private GraphicsDeviceManager Graphics { get; }
-        private SpriteBatch SpriteBatch { get; set; }
-        public InGameCamera Camera { get; set; }
-        private Vehicle Vehicle { get; set; }
-        private GameScene Scene { get; set; }
 
         protected override void Initialize()
         {
@@ -39,18 +39,19 @@ namespace TGC.MonoGame.TP
             Graphics.ApplyChanges();
 
             Camera = new InGameCamera(GraphicsDevice.Viewport.AspectRatio);
-            Scene = new GameScene(this, GraphicsDevice);
+            Scene = new GameScene();
             
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
-            Scene.Load();
+            Scene.Load(this);
             Vehicle = new Vehicle(Content);
-            SpriteBatch = new SpriteBatch(GraphicsDevice);
-            
-            Colliders = new BoundingBox[0];
+            Box = new Box(Content, new Vector3(500f, 50f, 20f), 2f);
+
+            Colliders = new BoundingBox[1];//Scene.Colliders;
+            Colliders[0] = Box.Collider;
 
             base.LoadContent();
         }
@@ -58,6 +59,7 @@ namespace TGC.MonoGame.TP
         protected override void Update(GameTime gameTime)
         {
             float dTime = Convert.ToSingle(gameTime.ElapsedGameTime.TotalSeconds);
+
             var keyboardState = Keyboard.GetState();
             if (keyboardState.IsKeyDown(Keys.Escape))
                 Exit();
@@ -69,9 +71,12 @@ namespace TGC.MonoGame.TP
         }
         protected override void Draw(GameTime gameTime)
         {
+            float dTime = Convert.ToSingle(gameTime.ElapsedGameTime.TotalSeconds);
+
             GraphicsDevice.Clear(Color.Black);
-            Vehicle.Draw(Camera.View, Camera.Projection);
+            Vehicle.Draw(dTime, Camera.View, Camera.Projection);
             Scene.Draw(gameTime, Camera);
+            Box.Draw(Camera.View, Camera.Projection);
 
             base.Draw(gameTime);
         }

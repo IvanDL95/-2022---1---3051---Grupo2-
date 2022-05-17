@@ -24,6 +24,21 @@ namespace TGC.MonoGame.Collisions
             return (box.Max + box.Min) * 0.5f;
         }
 
+        public static BoundingBox FromMatrix(Matrix matrix)
+        {
+            return new BoundingBox(Vector3.Transform(-Vector3.One * 0.5f, matrix), Vector3.Transform(Vector3.One * 0.5f, matrix));
+        }
+
+        public static Vector3 ClosestPoint(BoundingBox box, Vector3 point)
+        {
+            var min = box.Min;
+            var max = box.Max;
+            point.X = MathHelper.Clamp(point.X, min.X, max.X);
+            point.Y = MathHelper.Clamp(point.Y, min.Y, max.Y);
+            point.Z = MathHelper.Clamp(point.Z, min.Z, max.Z);
+            return point;
+        }
+
         public static BoundingBox CreateAABBFrom(Model model)
         {
             var minPoint = Vector3.One * float.MaxValue;

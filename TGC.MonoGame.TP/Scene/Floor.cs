@@ -1,21 +1,12 @@
-﻿#region Using Statements
-
-using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-
-using TGC.MonoGame.TP.Models;
-using TGC.MonoGame.TP.Cameras;
 using TGC.MonoGame.TP.Geometries.Textures;
-
-#endregion Using Statements
 
 namespace TGC.MonoGame.TP.Scene
 {
-    class Floor
+    public class Floor
     {
-        private Matrix World { get; set; }
+        public Matrix World { get; set; }
         public Effect Effect { get; set; }
         // A Quad to draw the floor - TODO hacerlo polimorfico tal vez
         private QuadPrimitive Quad { get; set; }
