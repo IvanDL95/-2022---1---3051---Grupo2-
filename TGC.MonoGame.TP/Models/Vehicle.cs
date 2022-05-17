@@ -7,45 +7,39 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input;
 using TGC.MonoGame.Collisions;
 
-namespace TGC.MonoGame.TP
+namespace TGC.MonoGame.TP.Models
 {
-    public class Vehicle
-    {   
-        private Model Model { get; set; }
-        private Effect Effect { get; set; }
-        private Texture2D Texture { get; set; }
-        private BoundingBox Collider { get; set; }
-        public Matrix World { get; set; }
-        private Matrix Scale { get; set; }
-        private Matrix Rotation { get; set; }
-        private Matrix Translation { get; set; }
-        private Vector3 Position { get; set; }
-        private Matrix WheelRotation { get; set; }
+    public abstract class Vehicle
+    {
+        protected Game Game { get; set; }
+        protected Model Model { get; set; }
+        protected Effect Effect { get; set; }
+        protected Texture2D Texture { get; set; }
+        protected BoundingBox Collider { get; set; }
+        public Matrix World;
+        protected Matrix Scale { get; set; }
+        protected Matrix Rotation { get; set; }
+        protected Matrix Translation { get; set; }
+        protected Vector3 Position { get; set; }
+        protected Matrix WheelRotation { get; set; }
 
-        private float SpinningSensibility { get; set; } = 0f;
-        private float MaxSpinSensibility { get; set; } = 3f;
+        protected float SpinningSensibility { get; set; } = 0f;
+        protected float MaxSpinSensibility { get; set; } = 3f;
         
-        private float Acceleration { get; set; } = 9f;
-        private float Friction { get; set; } = 5f;
-        private float HorizontalVelocity { get; set; } = 0f;
-        private float MaxHorizontalVelocity { get; set; } = 700f;
-        private float MinHorizontalVelocity { get; set; } = -200f;
-        private bool Grounded = false; 
+        protected float Acceleration { get; set; } = 9f;
+        protected float Friction { get; set; } = 5f;
+        protected float HorizontalVelocity { get; set; } = 0f;
+        protected float MaxHorizontalVelocity { get; set; } = 700f;
+        protected float MinHorizontalVelocity { get; set; } = -200f;
+        protected bool Grounded = false; 
 
-        private Vector3 Color;
+        protected Vector3 Color;
 
-        private const float EPSILON = 0.00001f;
+        protected const float EPSILON = 0.00001f;
 
-        public Vehicle(ContentManager content)
+        public Vehicle(Game game)
         {
-            Model = content.Load<Model>(TGCContent.ContentFolder3D + "vehicles/Car/car");
-            Effect = content.Load<Effect>(TGCContent.ContentFolderEffects + "TextShader");
-            var effect = Model.Meshes.FirstOrDefault().Effects.FirstOrDefault() as BasicEffect;
-            Effect.Parameters["ModelTexture"].SetValue(effect.Texture);
-
-            foreach (var mesh in Model.Meshes)
-                foreach (var meshPart in mesh.MeshParts)
-                    meshPart.Effect = Effect;
+            this.Game = game;
 
             Scale = Matrix.CreateScale(1f);
             Rotation = Matrix.Identity;
@@ -54,15 +48,14 @@ namespace TGC.MonoGame.TP
             Position = Vector3.Zero;
             Translation = Matrix.CreateTranslation(Position);
 
-            Collider = BoundingVolumesExtensions.CreateAABBFrom(Model);
-            Collider = new BoundingBox(Collider.Min + Position, Collider.Max + Position);
-
             Color = new Vector3(0, 1, 1);
 
             World = Scale * Rotation * Translation;
         }
 
-        public void Update(float dTime, BoundingBox[] colliders, KeyboardState keyboardState) {
+        public abstract void LoadContent();
+
+        public virtual void Update(float dTime, BoundingBox[] colliders, KeyboardState keyboardState) {
             VelocityUpdate(dTime, keyboardState);
             SpinSensibilityUpdate();
             Position += World.Forward * HorizontalVelocity * dTime;
@@ -79,7 +72,7 @@ namespace TGC.MonoGame.TP
             World = Scale * Rotation * Translation;
         }
 
-        public void Draw(float dTime, Matrix view, Matrix projection)
+        public virtual void Draw(float dTime, Matrix view, Matrix projection)
         {
             Effect.Parameters["ViewProjection"].SetValue(view * projection);
             WheelRotation *= -Matrix.CreateFromQuaternion(Quaternion.CreateFromAxisAngle(Vector3.UnitX, HorizontalVelocity * dTime));
@@ -101,7 +94,7 @@ namespace TGC.MonoGame.TP
         }
         
         //////////////////COLLISION//////////////////
-        private void DetectCollision(BoundingBox[] colliders) {
+        protected void DetectCollision(BoundingBox[] colliders) {
 
             //VERTICAL
             // Start by moving the Cylinder
@@ -214,15 +207,15 @@ namespace TGC.MonoGame.TP
         }
 
         //////////////////MOVEMENT//////////////////
-        private float boolToFloat(bool boolean) => boolean ? 1 : 0;
+        protected float boolToFloat(bool boolean) => boolean ? 1 : 0;
 
-        private float AccelerationAxis(KeyboardState keyboardState) => 
+        protected float AccelerationAxis(KeyboardState keyboardState) => 
             boolToFloat(keyboardState.IsKeyDown(Keys.W)) - boolToFloat(keyboardState.IsKeyDown(Keys.S));
 
-        private float YAxis(KeyboardState keyboardState) => 
+        protected float YAxis(KeyboardState keyboardState) => 
             boolToFloat(keyboardState.IsKeyDown(Keys.A)) - boolToFloat(keyboardState.IsKeyDown(Keys.D));
 
-        private void VelocityUpdate(float dTime, KeyboardState keyboardState) {
+        protected void VelocityUpdate(float dTime, KeyboardState keyboardState) {
             if(HorizontalVelocity > 0)
                 HorizontalVelocity = MathHelper.Clamp(HorizontalVelocity - Friction, 0, MaxHorizontalVelocity); 
             else
@@ -230,13 +223,13 @@ namespace TGC.MonoGame.TP
             HorizontalVelocity = MathHelper.Clamp(HorizontalVelocity + AccelerationAxis(keyboardState) * Acceleration, MinHorizontalVelocity, MaxHorizontalVelocity); 
         }
 
-        private void SpinSensibilityUpdate() {
+        protected void SpinSensibilityUpdate() {
             if(HorizontalVelocity == 0)
                 SpinningSensibility = 0f;
             else
                 SpinningSensibility = MathF.Abs(MaxSpinSensibility * (HorizontalVelocity / MaxHorizontalVelocity));
         }
 
-        private void Jump() {}
+        protected void Jump() {}
     }
 }

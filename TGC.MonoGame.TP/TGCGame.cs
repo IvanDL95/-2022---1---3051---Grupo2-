@@ -4,6 +4,8 @@ using Microsoft.Xna.Framework.Graphics;
 
 using TGC.MonoGame.TP.Cameras;
 using TGC.MonoGame.TP.Scene;
+using TGC.MonoGame.TP.Models;
+using TGC.MonoGame.TP.Models.Vehicles;
 
 using Microsoft.Xna.Framework.Input;
 
@@ -13,7 +15,8 @@ namespace TGC.MonoGame.TP
     {
         private GraphicsDeviceManager Graphics { get; }
         private InGameCamera Camera { get; set; }
-        private Vehicle Vehicle { get; set; }
+        private Vehicle Vehicle;
+        private CombatVehicle Vehicle2 { get; set; }
         private GameScene Scene { get; set; }
         private BoundingBox[] Colliders { get; set; }
 
@@ -28,7 +31,6 @@ namespace TGC.MonoGame.TP
 
         protected override void Initialize()
         {
-
             var rasterizerState = new RasterizerState();
             rasterizerState.CullMode = CullMode.CullCounterClockwiseFace;
             GraphicsDevice.RasterizerState = rasterizerState;
@@ -38,16 +40,19 @@ namespace TGC.MonoGame.TP
             Graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height - 100;
             Graphics.ApplyChanges();
 
-            Camera = new InGameCamera(GraphicsDevice.Viewport.AspectRatio);
             Scene = new GameScene();
-            
+            Vehicle = new SimpleVehicle(this);
+            Camera = new InGameCamera(GraphicsDevice.Viewport.AspectRatio, ref Vehicle);
+            Vehicle2 = new CombatVehicle(Content);
+
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
             Scene.Load(this);
-            Vehicle = new Vehicle(Content);
+            Vehicle.LoadContent();
+            Vehicle2.Load(Vector3.UnitZ * 1000f);
             Box = new Box(Content, new Vector3(500f, 50f, 20f), 2f);
 
             Colliders = new BoundingBox[1];//Scene.Colliders;
@@ -64,7 +69,7 @@ namespace TGC.MonoGame.TP
             if (keyboardState.IsKeyDown(Keys.Escape))
                 Exit();
 
-            Camera.Update(gameTime, Vehicle.World);
+            Camera.Update(gameTime);
             Vehicle.Update(dTime, Colliders, keyboardState);
 
             base.Update(gameTime);
@@ -76,6 +81,7 @@ namespace TGC.MonoGame.TP
             GraphicsDevice.Clear(Color.Black);
             Vehicle.Draw(dTime, Camera.View, Camera.Projection);
             Scene.Draw(gameTime, Camera);
+            Vehicle2.Draw(Camera.View, Camera.Projection);
             Box.Draw(Camera.View, Camera.Projection);
 
             base.Draw(gameTime);
