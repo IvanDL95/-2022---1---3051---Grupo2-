@@ -1,12 +1,8 @@
 ﻿#region Using Statements
 
-using System;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
-
-using TGC.MonoGame.TP;
 
 #endregion Using Statements
 
@@ -34,8 +30,8 @@ namespace TGC.MonoGame.TP.Models
         /// </summary>
         public void Load(Vector3 position)
         {
-            Vehicle = Content.Load<Model>(TGCGame.ContentFolder3D + "vehicles/CombatVehicle/Vehicle");
-            Weapon = Content.Load<Model>(TGCGame.ContentFolder3D + "vehicles/CombatVehicle/Weapons");
+            Vehicle = Content.Load<Model>(TGCContent.ContentFolder3D + "vehicles/CombatVehicle/Vehicle");
+            Weapon = Content.Load<Model>(TGCContent.ContentFolder3D + "vehicles/CombatVehicle/Weapons");
             World = Matrix.Identity;
 
             // Starting position

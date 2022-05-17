@@ -7,6 +7,7 @@ namespace TGC.MonoGame.TP
 {
     public static class TGCContent
     {
+        public const string ContentFolder = "Content";
         public const string ContentFolder3D = "Models/";
         public const string ContentFolderEffects = "Effects/";
         public const string ContentFolderMusic = "Music/";

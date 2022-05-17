@@ -44,11 +44,11 @@ namespace TGC.MonoGame.TP.Scene
         {
             // Load Textures
             // StonesTexture = Game.Content.Load<Texture2D>(TGCGame.ContentFolderTextures + "stones");
-            WoodenTexture = game.Content.Load<Texture2D>(TGCGame.ContentFolderTextures + BoxTexture);
-            CobbleTexture = game.Content.Load<Texture2D>(TGCGame.ContentFolderTextures + CobbleTextureName);
+            WoodenTexture = game.Content.Load<Texture2D>(TGCContent.ContentFolderTextures + BoxTexture);
+            CobbleTexture = game.Content.Load<Texture2D>(TGCContent.ContentFolderTextures + CobbleTextureName);
 
-            TilingEffect = game.Content.Load<Effect>(TGCGame.ContentFolderEffects + "TextureTiling");
-            TextureEffect = game.Content.Load<Effect>(TGCGame.ContentFolderEffects + "TextureBasic");
+            TilingEffect = game.Content.Load<Effect>(TGCContent.ContentFolderEffects + "TextureTiling");
+            TextureEffect = game.Content.Load<Effect>(TGCContent.ContentFolderEffects + "TextureBasic");
 
             TilingEffect.Parameters["Texture"].SetValue(CobbleTexture);
             TilingEffect.Parameters["Tiling"].SetValue(new Vector2(100f, 100f));

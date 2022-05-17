@@ -46,7 +46,7 @@ namespace TGC.MonoGame.TP.TGCGameGame
         {
             // Load the tank model from the ContentManager.
             TankModel = new TankModel();
-            var model = Game.Content.Load<Model>(TGCGame.ContentFolder3D + VehiclesFolder + "Tank/tank");
+            var model = Game.Content.Load<Model>(TGCContent.ContentFolder3D + VehiclesFolder + "Tank/tank");
             TankModel.Load(model);
 
             TankWorld = Matrix.Identity;
