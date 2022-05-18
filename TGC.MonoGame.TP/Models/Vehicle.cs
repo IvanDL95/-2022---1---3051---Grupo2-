@@ -60,7 +60,6 @@ namespace TGC.MonoGame.TP.Models
             SpinSensibilityUpdate();
             Position += World.Forward * HorizontalVelocity * dTime;
 
-            Collider = new BoundingBox(Collider.Min + Position, Collider.Max + Position);
             DetectCollision(colliders);
 
             Rotation *= Matrix.CreateFromQuaternion(Quaternion.CreateFromAxisAngle(Vector3.UnitY, YAxis(keyboardState) * SpinningSensibility * dTime));
@@ -167,6 +166,8 @@ namespace TGC.MonoGame.TP.Models
             if (HorizontalVelocity == 0f)
                 return;
             
+            Collider = new BoundingBox(Collider.Min + Position, Collider.Max + Position);
+
             // Start by moving the Cylinder horizontally
             // RobotCylinder.Center += new Vector3(scaledVelocity.X, 0f, scaledVelocity.Z);
 
