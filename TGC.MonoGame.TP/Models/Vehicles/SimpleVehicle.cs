@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TGC.MonoGame.Collisions;
 
-namespace TGC.MonoGame.TP.Models.Vehicles
+namespace TGC.MonoGame.TP.Models
 {
     class SimpleVehicle : Vehicle
     {

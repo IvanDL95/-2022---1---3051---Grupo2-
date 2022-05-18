@@ -16,7 +16,6 @@ namespace TGC.MonoGame.TP
         private GraphicsDeviceManager Graphics { get; }
         private InGameCamera Camera { get; set; }
         private Vehicle Vehicle;
-        private CombatVehicle Vehicle2 { get; set; }
         private GameScene Scene { get; set; }
         private BoundingBox[] Colliders { get; set; }
 
@@ -43,7 +42,6 @@ namespace TGC.MonoGame.TP
             Scene = new GameScene();
             Vehicle = new SimpleVehicle(this);
             Camera = new InGameCamera(GraphicsDevice.Viewport.AspectRatio, ref Vehicle);
-            Vehicle2 = new CombatVehicle(Content);
 
             base.Initialize();
         }
@@ -52,7 +50,6 @@ namespace TGC.MonoGame.TP
         {
             Scene.Load(this);
             Vehicle.LoadContent();
-            Vehicle2.Load(Vector3.UnitZ * 1000f);
             Box = new Box(Content, new Vector3(500f, 50f, 20f), 2f);
 
             Colliders = new BoundingBox[1];//Scene.Colliders;
@@ -81,7 +78,6 @@ namespace TGC.MonoGame.TP
             GraphicsDevice.Clear(Color.Black);
             Vehicle.Draw(dTime, Camera.View, Camera.Projection);
             Scene.Draw(gameTime, Camera);
-            Vehicle2.Draw(Camera.View, Camera.Projection);
             Box.Draw(Camera.View, Camera.Projection);
 
             base.Draw(gameTime);
