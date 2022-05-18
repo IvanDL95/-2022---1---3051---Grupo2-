@@ -58,9 +58,9 @@ namespace TGC.MonoGame.TP.Models
         public virtual void Update(float dTime, BoundingBox[] colliders, KeyboardState keyboardState) {
             VelocityUpdate(dTime, keyboardState);
             SpinSensibilityUpdate();
-            Position += World.Forward * HorizontalVelocity * dTime;
-
-            DetectCollision(colliders);
+            var dPosition =  World.Forward * HorizontalVelocity * dTime;
+            Position += dPosition;
+            DetectCollision(colliders, dPosition);
 
             Rotation *= Matrix.CreateFromQuaternion(Quaternion.CreateFromAxisAngle(Vector3.UnitY, YAxis(keyboardState) * SpinningSensibility * dTime));
             Translation = Matrix.CreateTranslation(Position);
@@ -93,7 +93,7 @@ namespace TGC.MonoGame.TP.Models
         }
         
         //////////////////COLLISION//////////////////
-        protected void DetectCollision(BoundingBox[] colliders) {
+        protected void DetectCollision(BoundingBox[] colliders, Vector3 dPosition) {
 
             //VERTICAL
             // Start by moving the Cylinder
@@ -166,7 +166,7 @@ namespace TGC.MonoGame.TP.Models
             if (HorizontalVelocity == 0f)
                 return;
             
-            Collider = new BoundingBox(Collider.Min + Position, Collider.Max + Position);
+            Collider = new BoundingBox(Collider.Min + dPosition, Collider.Max + dPosition);
 
             // Start by moving the Cylinder horizontally
             // RobotCylinder.Center += new Vector3(scaledVelocity.X, 0f, scaledVelocity.Z);
@@ -195,15 +195,16 @@ namespace TGC.MonoGame.TP.Models
 
                 // Our penetration is the difference between the radius of the Cylinder and the Normal Vector
                 // For precission problems, we push the cylinder with a small increment to prevent re-colliding into the geometry
-                var selfHalfWidth = (Collider.Max.X - Collider.Min.X) / 2;
+                var selfHalfWidth = (Collider.Max.X - Collider.Min.X);
                 var penetration = selfHalfWidth - normalVector.Length() + EPSILON;
 
                 // Push the center out of the box
                 // Normalize our Normal Vector using its length first
                 //RobotCylinder.Center += (normalVector / normalVectorLength * penetration);
                 HorizontalVelocity = 0f;
-                Position += normalVector / normalVectorLength * penetration;
-                Color = new Vector3(1, 0, 0);
+                Vector3 rePosition = normalVector / normalVectorLength * penetration;
+                Position += rePosition;
+                Collider = new BoundingBox(Collider.Min + rePosition, Collider.Max + rePosition);
             }
         }
 
