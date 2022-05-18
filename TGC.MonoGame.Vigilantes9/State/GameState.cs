@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
-using TGC.MonoGame.TP.Cameras;
+using TGC.MonoGame.Vigilantes9.Cameras;
 
-namespace TGC.MonoGame.TP.State
+namespace TGC.MonoGame.Vigilantes9.State
 {
     public abstract class GameState : DrawableGameComponent
     {

@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input;
 using TGC.MonoGame.Collisions;
 
-namespace TGC.MonoGame.TP.Models
+namespace TGC.MonoGame.Vigilantes9.Models
 {
     public abstract class Vehicle
     {

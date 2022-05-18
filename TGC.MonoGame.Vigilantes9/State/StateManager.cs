@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace TGC.MonoGame.TP.State
+namespace TGC.MonoGame.Vigilantes9.State
 {
     public class StateManager : GameComponent, IStateService
     {

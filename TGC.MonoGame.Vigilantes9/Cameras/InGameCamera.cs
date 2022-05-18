@@ -1,8 +1,8 @@
 using Microsoft.Xna.Framework;
 using System;
-using TGC.MonoGame.TP.Models;
+using TGC.MonoGame.Vigilantes9.Models;
 
-namespace TGC.MonoGame.TP.Cameras
+namespace TGC.MonoGame.Vigilantes9.Cameras
 {
     public class InGameCamera : Camera
     {

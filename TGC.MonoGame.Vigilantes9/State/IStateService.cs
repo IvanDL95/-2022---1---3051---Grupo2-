@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace TGC.MonoGame.TP.State
+namespace TGC.MonoGame.Vigilantes9.State
 {
     public interface IStateService
     {

@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 #endregion Using Statements
 
-namespace TGC.MonoGame.TP.Models
+namespace TGC.MonoGame.Vigilantes9.Models
 {
     public sealed class TankModel
     {

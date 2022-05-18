@@ -4,11 +4,11 @@ using System;
 using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using TGC.MonoGame.TP.Geometries.Textures;
+using TGC.MonoGame.Vigilantes9.Geometries.Textures;
 
 #endregion Using Statements
 
-namespace TGC.MonoGame.TP.Models.Boxes
+namespace TGC.MonoGame.Vigilantes9.Models.Boxes
 {
     public class RegularBox : Box
     {

@@ -2,7 +2,7 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace TGC.MonoGame.TP.Models.Boxes
+namespace TGC.MonoGame.Vigilantes9.Models.Boxes
 {
     public class PowerUpBox : RegularBox
     {

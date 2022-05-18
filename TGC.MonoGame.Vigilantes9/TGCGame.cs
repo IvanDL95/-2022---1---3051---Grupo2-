@@ -2,14 +2,14 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-using TGC.MonoGame.TP.Cameras;
-using TGC.MonoGame.TP.Scene;
-using TGC.MonoGame.TP.Models;
-using TGC.MonoGame.TP.Models.Vehicles;
+using TGC.MonoGame.Vigilantes9.Cameras;
+using TGC.MonoGame.Vigilantes9.Scene;
+using TGC.MonoGame.Vigilantes9.Models;
+using TGC.MonoGame.Vigilantes9.Models.Vehicles;
 
 using Microsoft.Xna.Framework.Input;
 
-namespace TGC.MonoGame.TP
+namespace TGC.MonoGame.Vigilantes9
 {
     public class TGCGame : Game
     {

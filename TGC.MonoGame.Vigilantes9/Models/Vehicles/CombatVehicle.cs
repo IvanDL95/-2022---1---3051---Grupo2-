@@ -9,7 +9,7 @@ using TGC.MonoGame.Collisions;
 
 #endregion Using Statements
 
-namespace TGC.MonoGame.TP.Models.Vehicles
+namespace TGC.MonoGame.Vigilantes9.Models.Vehicles
 {
     public class CombatVehicle : Vehicle
     {

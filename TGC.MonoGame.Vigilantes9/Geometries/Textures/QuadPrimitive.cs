@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace TGC.MonoGame.TP.Geometries.Textures
+namespace TGC.MonoGame.Vigilantes9.Geometries.Textures
 {
     /// <summary>
     ///     The quad is like a plane but its made by two triangle and the surface is oriented in the XY plane of the local

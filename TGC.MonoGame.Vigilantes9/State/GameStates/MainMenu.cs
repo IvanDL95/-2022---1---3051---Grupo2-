@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 
-namespace TGC.MonoGame.TP.State
+namespace TGC.MonoGame.Vigilantes9.State
 {
     public class MainMenu : GameState
     {

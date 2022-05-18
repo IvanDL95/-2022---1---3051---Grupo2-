@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input;
 using TGC.MonoGame.Collisions;
 
-namespace TGC.MonoGame.TP
+namespace TGC.MonoGame.Vigilantes9
 {
     public class Box
     {

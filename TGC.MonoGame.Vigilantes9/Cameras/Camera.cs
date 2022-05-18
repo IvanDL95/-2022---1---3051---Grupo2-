@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 
 #endregion Using Statements
 
-namespace TGC.MonoGame.TP.Cameras
+namespace TGC.MonoGame.Vigilantes9.Cameras
 {
     public struct Frustum
     {

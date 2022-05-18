@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using TGC.MonoGame.TP.Geometries.Textures;
+using TGC.MonoGame.Vigilantes9.Geometries.Textures;
 
-namespace TGC.MonoGame.TP.Scene
+namespace TGC.MonoGame.Vigilantes9.Scene
 {
     public class Floor
     {

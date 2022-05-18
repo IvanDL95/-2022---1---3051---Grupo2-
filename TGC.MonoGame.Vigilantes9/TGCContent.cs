@@ -1,4 +1,4 @@
-namespace TGC.MonoGame.TP
+namespace TGC.MonoGame.Vigilantes9
 {
     public static class TGCContent
     {

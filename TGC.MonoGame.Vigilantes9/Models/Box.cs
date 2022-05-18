@@ -5,9 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using TGC.MonoGame.TP.Geometries.Textures;
+using TGC.MonoGame.Vigilantes9.Geometries.Textures;
 
-namespace TGC.MonoGame.TP.Models
+namespace TGC.MonoGame.Vigilantes9.Models
 {
     public abstract class Box : DrawableGameComponent
     {

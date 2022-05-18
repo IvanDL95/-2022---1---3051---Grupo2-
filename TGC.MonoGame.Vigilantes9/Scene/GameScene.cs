@@ -1,11 +1,11 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using TGC.MonoGame.TP.Models.Boxes;
-using TGC.MonoGame.TP.Cameras;
-using TGC.MonoGame.TP.Geometries.Textures;
+using TGC.MonoGame.Vigilantes9.Models.Boxes;
+using TGC.MonoGame.Vigilantes9.Cameras;
+using TGC.MonoGame.Vigilantes9.Geometries.Textures;
 using TGC.MonoGame.Collisions;
 
-namespace TGC.MonoGame.TP.Scene
+namespace TGC.MonoGame.Vigilantes9.Scene
 {
     public class GameScene
     {
