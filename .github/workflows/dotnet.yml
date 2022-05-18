@@ -1,31 +1,36 @@
-name: .NET
+name: Test .NET Build
 
 on:
   push:
-    branches: [ develop ]
+    branches: [ master ]
   pull_request:
-    branches: [ develop ]
+    branches: [ develop, master ]
 
 jobs:
-  build:
-
+  build-windows:
+    name: Build Windows
     runs-on: windows-latest
+    env:
+      DOTNET_NOLOGO: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
       with:
         lfs: true
-    - name: Setup .NET
+    - name: Setup .NET Core SDK
       uses: actions/setup-dotnet@v2
       with:
         dotnet-version: 3.1.x
-    - name: Setup MonoGame
-      run: |
-        dotnet tool install --global dotnet-mgcb-editor
-        mgcb-editor --register
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal
+#    - name: Upload build
+#      uses: actions/upload-artifact@v3
+#      with:
+#        name: dotnet-build-${{ github.run_number }}-windows.zip
+#        path: build

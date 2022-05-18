@@ -1,0 +1,120 @@
+name: Release TP
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+'
+  pull_request:
+    branches:    
+      - 'releases/[0-9]+.[0-9]+'
+
+env:
+  GAME_NAME: Grupo 2
+  PROJECT_NAME: Grupo_2
+  PROJECT_PATH: TGC.MonoGame.TP
+  PRERELEASE: true
+
+jobs:
+  build-project:
+    name: Publish Project
+    runs-on: windows-latest
+
+    env:
+      DOTNET_NOLOGO: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+        lfs: true
+    - name: Setup .NET Core SDK
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 3.1.x
+    - name: Build Windows
+      run: dotnet publish ${{ env.PROJECT_PATH }} -r win-x64 -c Release --output artifacts/windows
+    - name: Build Osx
+      run: dotnet publish ${{ env.PROJECT_PATH }} -r osx-x64 -c Release --output artifacts/osx
+    - name: Build Linux
+      run: dotnet publish ${{ env.PROJECT_PATH }} -r linux-x64 -c Release --output artifacts/linux
+    - name: Copy license and readme
+      run: |
+        copy LICENSE artifacts
+        copy README.md artifacts
+    - name: Upload build
+      uses: actions/upload-artifact@v3
+      with:
+        name: dotnet-build
+        path: artifacts/
+
+  release-project:
+    name: Release Project
+    runs-on: ubuntu-20.04
+    needs: build-project
+
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+    - name: Extract tag name
+      id: release_tag
+      uses: actions/github-script@v6
+      with:
+        script: |
+          return context.payload.ref.replace(/refs\/tags\//, '');
+        result-encoding: string
+    - name: Retrieve version
+      run: |
+        TAGVERSION="${{steps.release_tag.outputs.result}}"
+        echo "TAGVERSION=${TAGVERSION:1}" >> $GITHUB_ENV
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: dotnet-build
+    - name: Package release
+      run: |  # xargs ejecuta 1 argumento recibido a la vez, n veces y reemplaza los % por el argumento.
+        chmod 755 linux/${{ env.PROJECT_PATH }} osx/${{ env.PROJECT_PATH }}
+        ls --ignore=LICENSE --ignore=README.md | xargs -I % zip --junk-paths release-%.zip LICENSE README.md
+        rm LICENSE README.md
+        mv windows ${{ env.PROJECT_PATH }} && zip --grow --recurse-paths --move release-windows.zip ${{ env.PROJECT_PATH }}
+        mv osx ${{ env.PROJECT_PATH }} && zip --grow --recurse-paths --move release-osx.zip ${{ env.PROJECT_PATH }}
+        mv linux ${{ env.PROJECT_PATH }} && zip --grow --recurse-paths --move release-linux.zip ${{ env.PROJECT_PATH }}
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      with:
+        tag_name: v${{ env.TAGVERSION }}
+        release_name: v${{ env.TAGVERSION }}
+        body: |
+          ${{ env.GAME_NAME }} - Versión ${{ env.TAGVERSION }}
+          
+          Integrantes:
+          - Iván De Luca
+          - Etc. Etc.
+        draft: false
+        prerelease: ${{ env.PRERELEASE }}
+    - name: Upload Release Windows
+      id: upload-release-asset-windows
+      uses: actions/upload-release-asset@v1
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./release-windows.zip
+        asset_name:  ${{ env.PROJECT_NAME }}-v${{ env.TAGVERSION }}-windows.zip
+        asset_content_type: application/zip
+    - name: Upload Release MacOS
+      id: upload-release-asset-osx
+      uses: actions/upload-release-asset@v1
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./release-osx.zip
+        asset_name:  ${{ env.PROJECT_NAME }}-v${{ env.TAGVERSION }}-osx.zip
+        asset_content_type: application/zip
+    - name: Upload Release Linux
+      id: upload-release-asset-linux
+      uses: actions/upload-release-asset@v1
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./release-linux.zip
+        asset_name:  ${{ env.PROJECT_NAME }}-v${{ env.TAGVERSION }}-linux.zip
+        asset_content_type: application/zip
