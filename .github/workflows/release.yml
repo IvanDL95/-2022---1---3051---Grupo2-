@@ -91,7 +91,9 @@ jobs:
           
           Integrantes:
           - Iván De Luca
-          - Etc. Etc.
+          - Sebastian Cabral
+          - Luis Pulgar
+          - Ezequiel Wyse
         draft: false
         prerelease: ${{ env.PRERELEASE }}
     - name: Upload Release Windows
