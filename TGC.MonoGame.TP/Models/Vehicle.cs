@@ -35,7 +35,7 @@ namespace TGC.MonoGame.TP.Models
 
         protected Vector3 Color;
 
-        protected const float EPSILON = 0.00001f;
+        protected const float EPSILON = 0.0001f;
 
         public Vehicle(Game game)
         {
