@@ -10,28 +10,22 @@ using TGC.MonoGame.Vigilantes9.Geometries.Textures;
 
 namespace TGC.MonoGame.Vigilantes9.Models.Boxes
 {
-    public class RegularBox : Box
+    public class RegularBox : BoxModel
     {
-        public RegularBox(Game game, Matrix world) : this(
-            game, new BasicEffect(game.GraphicsDevice), world)
+        #region Constants
+
+        protected const float DefaultBoxSize = 2f;
+
+        #endregion Constants
+
+        public RegularBox(Vector3 position) : this(position, DefaultBoxSize)
         {
         }
 
-        public RegularBox(Game game, Effect effect, Matrix world) : base(
-            game, effect)
+        public RegularBox(Vector3 position, float scale) : base(position, Vector3.One * scale)
         {
-            World = world;
+            // World = Matrix.CreateScale(scale) * Matrix.CreateTranslation(position);
         }
 
-        public RegularBox(Game game, Effect effect, Vector3 size, Matrix world) : base(game, effect, size)
-        {
-            World = world;
-        }
-
-        #region Fields
-
-        public Matrix World { get; set; }
-
-        #endregion Fields
     }
 }

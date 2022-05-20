@@ -6,8 +6,7 @@ namespace TGC.MonoGame.Vigilantes9.Models.Boxes
 {
     public class PowerUpBox : RegularBox
     {
-        public PowerUpBox(Game game, Matrix world) : base(
-            game, world)
+        public PowerUpBox(Vector3 position) : base(position, DefaultBoxSize)
         {
         }
 

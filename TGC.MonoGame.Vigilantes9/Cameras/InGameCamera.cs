@@ -18,15 +18,14 @@ namespace TGC.MonoGame.Vigilantes9.Cameras
 
         private Vector3 PastRightVector { get; set; } = Vector3.Right;
 
-        /* Eventualmente será el jugador a seguir (objeto Player) */
-        private Vehicle FollowedPlayer;
+        private Player FollowedPlayer;
 
         /// <summary>
         ///     Camera looking at a particular direction with an isometric view, which has the up vector (0,1,0).
         /// </summary>
         /// <param name="aspectRatio">Aspect ratio, defined as view space width divided by height.</param>
         /// <param name="followedPlayer">The player to follow. Pass as reference.</param>
-        public InGameCamera(float aspectRatio, ref Vehicle followedPlayer) : base(
+        public InGameCamera(float aspectRatio, Player followedPlayer) : base(
             aspectRatio, DefaultNearPlaneDistance, 100000f, MathF.PI / 3f
         )
         {
@@ -54,13 +53,13 @@ namespace TGC.MonoGame.Vigilantes9.Cameras
                 + CurrentRightVector * AxisDistanceToTarget
                 + Vector3.Up * AxisDistanceToTarget;
 
-            var forward = (followedPosition - offsetedPosition);
-            forward.Normalize();
+            FrontDirection = (followedPosition - offsetedPosition);
+            FrontDirection.Normalize();
 
-            var right = Vector3.Cross(forward, Vector3.Up);
-            var cameraCorrectUp = Vector3.Cross(right, forward);
+            RightDirection = Vector3.Cross(FrontDirection, Vector3.Up);
+            UpDirection = Vector3.Cross(RightDirection, FrontDirection);
 
-            View = Matrix.CreateLookAt(offsetedPosition, followedPosition, cameraCorrectUp);
+            BuildView(offsetedPosition, followedPosition);
         }
     }
 }

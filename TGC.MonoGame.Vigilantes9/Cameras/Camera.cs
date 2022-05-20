@@ -101,7 +101,7 @@ namespace TGC.MonoGame.Vigilantes9.Cameras
         /// <summary>
         ///     Build the camera View matrix using its properties.
         /// </summary>
-        public void BuildView(Vector3 position, Vector3 target)
+        protected void BuildView(Vector3 position, Vector3 target)
         {
             View = Matrix.CreateLookAt(position, target, UpDirection);
         }
@@ -109,7 +109,7 @@ namespace TGC.MonoGame.Vigilantes9.Cameras
         /// <summary>
         ///     Build the camera View matrix using its properties.
         /// </summary>
-        public void BuildView()
+        public virtual void BuildView()
         {
             BuildView(Position, Position + FrontDirection);
         }
@@ -121,12 +121,12 @@ namespace TGC.MonoGame.Vigilantes9.Cameras
         /// <param name="gameTime">Holds the time state of a <see cref="Game" />.</param>
         public abstract void Update(GameTime gameTime);
 
-        #region Fields
+        #region Properties
 
         /// <summary>
         ///     The created view matrix.
         /// </summary>
-        public Matrix View { get; set; }
+        public Matrix View { get; protected set; }
         
         /// <summary>
         ///     Position where the camera is located.
@@ -134,7 +134,7 @@ namespace TGC.MonoGame.Vigilantes9.Cameras
         public Vector3 Position { get; set; }
 
         // TODO - Reducir este boilerplate de direcciones con Vector3 de direccones
-        // public Vector3 TargetDirection;
+        // public Matrix TargetDirection;
 
         /// <summary>
         ///     Direction where the camera is looking.
@@ -144,7 +144,7 @@ namespace TGC.MonoGame.Vigilantes9.Cameras
         /// <summary>
         ///     Represents the positive x-axis of the camera space.
         /// </summary>
-        public Vector3 DirectionX { get; set; }
+        public Vector3 RightDirection { get; set; }
 
         /// <summary>
         ///     Vector up direction (may differ if the camera is reversed).
@@ -154,13 +154,13 @@ namespace TGC.MonoGame.Vigilantes9.Cameras
         /// <summary>
         ///     The perspective projection matrix.
         /// </summary>
-        public Matrix Projection { get; set; }
+        public Matrix Projection { get; protected set; }
 
         /// <summary>
         ///     Frustum of the camera.
         /// </summary>
-        public Frustum ProjectionFrustum { get; set; }
+        protected Frustum ProjectionFrustum { get; set; }
 
-        #endregion Fields
+        #endregion Properties
     }
 }
