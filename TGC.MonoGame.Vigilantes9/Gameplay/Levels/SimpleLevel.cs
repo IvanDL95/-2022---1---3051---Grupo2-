@@ -116,12 +116,6 @@ namespace TGC.MonoGame.Vigilantes9.Levels
             base.LoadContent();
         }
 
-        protected override void UnloadContent()
-        {
-            this.Content.Unload();
-            base.UnloadContent();
-        }
-
         public override void Draw(GameTime gameTime)
         {
             var viewProjection = Player.Perspective;

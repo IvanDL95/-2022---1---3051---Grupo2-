@@ -38,6 +38,12 @@ namespace TGC.MonoGame.Vigilantes9.Gameplay
             base.Initialize();
         }
 
+        protected override void UnloadContent()
+        {
+            Content.Unload();
+            base.UnloadContent();
+        }
+
         #region GamePlay
 
         protected Player Player { get; set; }

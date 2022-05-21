@@ -75,6 +75,7 @@ namespace TGC.MonoGame.Vigilantes9
 
         protected override void UnloadContent()
         {
+            Components.Clear();
             Content.Unload();
             base.UnloadContent();
         }
