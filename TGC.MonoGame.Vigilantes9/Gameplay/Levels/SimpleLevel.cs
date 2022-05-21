@@ -1,5 +1,6 @@
 #region Using Statements
 
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TGC.MonoGame.Vigilantes9.Gameplay;
@@ -108,10 +109,7 @@ namespace TGC.MonoGame.Vigilantes9.Levels
                 var effect = textureShader;
                 effect.Parameters["ModelTexture"].SetValue(woodenBoxTexture);
                 box.Load(boxModel, effect);
-            }
 
-            foreach (BoxModel box in BoxList)
-            {
                 LevelColliders.Add(box.Collider);
             }
 

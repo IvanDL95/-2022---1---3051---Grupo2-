@@ -17,8 +17,7 @@ namespace TGC.MonoGame.Vigilantes9.Gameplay
         protected const float LevelCeiling = 2000f;
         protected const float LevelFloor = 0f;
         protected const float LevelHeight = LevelCeiling - LevelFloor;
-        protected const ushort LevelsSidesCount = (ushort)6;
-        protected const float WallsThickness = 2f;
+        protected const float WallsThickness = 1f;
 
         /// <summary>
         ///     Create Bounding Boxes to enclose the level. 6 total, 4 walls, floor and ceiling.
@@ -33,7 +32,7 @@ namespace TGC.MonoGame.Vigilantes9.Gameplay
 
         public override void Initialize()
         {
-            BoundingBox[] levelBoundaries = SetBoundaries(Vector3.One * WallsThickness);
+            BoundingBox[] levelBoundaries = GetBoundaries(Vector3.One * WallsThickness);
             LevelColliders = new List<BoundingBox>(levelBoundaries);
 
             base.Initialize();
@@ -53,25 +52,20 @@ namespace TGC.MonoGame.Vigilantes9.Gameplay
         ///     Create Bounding Boxes to enclose the level. 6 total, 4 walls, floor and ceiling.
         /// </summary>
         /// <param name="wallThickness">Wall Thickness</param>
-        protected BoundingBox[] SetBoundaries(Vector3 wallThickness)
+        protected BoundingBox[] GetBoundaries(Vector3 wallThickness)
         {
-            var levelScale = LevelScale / 2;
-            var minVector = wallThickness / 2;
+            return new BoundingBox[]
+            {
+                // Walss Boundary
+                new BoundingBox(new Vector3(-LevelScale.X, LevelFloor, -LevelScale.Z) - wallThickness, new Vector3( LevelScale.X, LevelCeiling,-LevelScale.Z)),
+                new BoundingBox(new Vector3(-LevelScale.X, LevelFloor,  LevelScale.Z) - wallThickness, new Vector3( LevelScale.X, LevelCeiling, LevelScale.Z)),
+                new BoundingBox(new Vector3( LevelScale.X, LevelFloor, -LevelScale.Z) - wallThickness, new Vector3( LevelScale.X, LevelCeiling, LevelScale.Z)),
+                new BoundingBox(new Vector3(-LevelScale.X, LevelFloor, -LevelScale.Z) - wallThickness, new Vector3(-LevelScale.X, LevelCeiling, LevelScale.Z)),
 
-            var levelBoundaries = new BoundingBox[LevelsSidesCount];
-            // Walss Boundary
-            levelBoundaries[0] = new BoundingBox(new Vector3(-LevelScale.X, LevelFloor, -LevelScale.Z) - minVector, new Vector3( LevelScale.X, LevelCeiling,-LevelScale.Z) + minVector);
-            levelBoundaries[1] = new BoundingBox(new Vector3(-LevelScale.X, LevelFloor,  LevelScale.Z) - minVector, new Vector3( LevelScale.X, LevelCeiling, LevelScale.Z) + minVector);
-            levelBoundaries[2] = new BoundingBox(new Vector3( LevelScale.X, LevelFloor, -LevelScale.Z) - minVector, new Vector3( LevelScale.X, LevelCeiling, LevelScale.Z) + minVector);
-            levelBoundaries[3] = new BoundingBox(new Vector3(-LevelScale.X, LevelFloor, -LevelScale.Z) - minVector, new Vector3(-LevelScale.X, LevelCeiling, LevelScale.Z) + minVector);
-
-            var levelFloorBoundary = LevelFloor - WallsThickness;
-            var levelCeilingBoundary = LevelCeiling + WallsThickness;
-            // Floor/Ceiling Boundary
-            levelBoundaries[4] = new BoundingBox(new Vector3(-LevelScale.X, levelFloorBoundary, -LevelScale.Z) - minVector, new Vector3(LevelScale.X, levelFloorBoundary, LevelScale.Z) + minVector);
-            levelBoundaries[5] = new BoundingBox(new Vector3(-LevelScale.X, levelCeilingBoundary, -LevelScale.Z) - minVector, new Vector3(LevelScale.X, levelCeilingBoundary, LevelScale.Z) + minVector);
-
-            return levelBoundaries;
+                // Floor/Ceiling Boundary
+                new BoundingBox(new Vector3(-LevelScale.X, LevelFloor, -LevelScale.Z) - wallThickness, new Vector3(LevelScale.X, LevelFloor, LevelScale.Z)),
+                new BoundingBox(new Vector3(-LevelScale.X, LevelCeiling, -LevelScale.Z) - wallThickness, new Vector3(LevelScale.X, LevelCeiling, LevelScale.Z)),
+            };
         }
 
         #endregion GamePlay
