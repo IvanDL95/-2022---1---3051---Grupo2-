@@ -96,8 +96,10 @@ namespace TGC.MonoGame.Vigilantes9.Debug
             bool flag = false;
             foreach (KeyValuePair<string, TGCSample> pair in SamplesByName)
             {
-                if(flag)
+                if(flag) {
                     LoadSample(pair.Key);
+                    break;
+                }
 
                 if(pair.Key == ActiveSample.Name)
                     flag = true;
@@ -109,8 +111,10 @@ namespace TGC.MonoGame.Vigilantes9.Debug
             string previousSample = SamplesByName.FirstOrDefault().Key;
             foreach (KeyValuePair<string, TGCSample> pair in SamplesByName)
             {
-                if(pair.Key == ActiveSample.Name)
+                if(pair.Key == ActiveSample.Name) {
                     LoadSample(previousSample);
+                    break;
+                }
 
                 previousSample = pair.Key;
             }

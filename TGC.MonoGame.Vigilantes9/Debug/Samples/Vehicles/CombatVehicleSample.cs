@@ -16,7 +16,7 @@ namespace TGC.MonoGame.Vigilantes9.Debug.Samples.Vehicles
         public CombatVehicleSample(TGCDebug game) : base(game)
         {
             Category = TGCSampleCategory.Vehicle;
-            Name = "CombatVehicleSample";
+            Name = "Combat Vehicle";
             Description =
                 "The vehicle the player will use.";
         }
@@ -71,6 +71,8 @@ namespace TGC.MonoGame.Vigilantes9.Debug.Samples.Vehicles
 
         public override void Draw(GameTime gameTime)
         {
+            Game.Background = Color.CornflowerBlue;
+
             var world = Matrix.CreateScale(1000f);
             TillingEffect.Parameters["World"].SetValue(world);
             TillingEffect.Parameters["WorldViewProjection"].SetValue(world * Camera.View * Camera.Projection);

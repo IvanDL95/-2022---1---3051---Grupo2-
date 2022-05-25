@@ -126,6 +126,7 @@ namespace TGC.MonoGame.Vigilantes9
             // Gizmos.Draw();
         }
 
+        int sampleChangedTicks = 0;
         /// <summary>
         ///     Handles input for quitting the game.
         /// </summary>
@@ -141,11 +142,18 @@ namespace TGC.MonoGame.Vigilantes9
             bool changeSample = CurrentKeyboardState.IsKeyDown(Keys.Tab);
             if(CurrentKeyboardState.IsKeyDown(Keys.LeftShift))
             {
-                if (changeSample) Model.LoadPreviousSample();
+                if (changeSample && sampleChangedTicks <= 0){
+                    Model.LoadPreviousSample();
+                    sampleChangedTicks = 18;
+                }
             } else 
             {
-                if (changeSample) Model.LoadNextSample();
+                if (changeSample && sampleChangedTicks <= 0){
+                    Model.LoadNextSample();
+                    sampleChangedTicks = 18;
+                }
             }
+            if(sampleChangedTicks > 0) sampleChangedTicks--;
         }
     }
 }
