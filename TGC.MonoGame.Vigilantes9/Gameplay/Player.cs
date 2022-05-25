@@ -13,14 +13,18 @@ using TGC.MonoGame.Vigilantes9.Models;
 namespace TGC.MonoGame.Vigilantes9
 {
     public sealed class Player : GameComponent
-    {
-        public Camera Camera;
-        public Vehicle Vehicle;
-        
+    {        
         public Player(Game game, Vehicle vehicle) : base(game)
         {
             Vehicle = vehicle;
         }
+
+        #region Fields
+
+        public Camera Camera;
+        public Vehicle Vehicle;
+
+        #endregion Fields
 
         public override void Initialize()
         {   
@@ -36,14 +40,11 @@ namespace TGC.MonoGame.Vigilantes9
             base.Update(gameTime);
         }
 
-        public Matrix Perspective
-        {
-            get { return Camera.View * Camera.Projection; }
-        }
+        #region Properties
 
-        public Matrix World
-        {
-            get { return Vehicle.World; }
-        }
+        public Matrix Perspective => Camera.View * Camera.Projection;
+        public Matrix World => Vehicle.World;
+
+        #endregion Properties
     }
 }

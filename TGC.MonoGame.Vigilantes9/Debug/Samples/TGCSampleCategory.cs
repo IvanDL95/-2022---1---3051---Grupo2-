@@ -6,5 +6,6 @@
     public static class TGCSampleCategory
     {
         public const string Vehicle = "Vehicle";
+        public const string Shaders = "Shaders";
     }
 }

@@ -34,7 +34,8 @@ namespace TGC.MonoGame.Vigilantes9.Debug.Samples.Vehicles
         public override void Initialize()
         {
             Model = new Models.Vehicles.CombatVehicle(0f,0f,0f);
-            Camera = new IsometricCamera(Game.GraphicsDevice.Viewport.AspectRatio, 500f);
+            // Camera = new IsometricCamera(Game.GraphicsDevice.Viewport.AspectRatio, 500f);
+            Camera = new FreeCamera(GraphicsDevice.Viewport.AspectRatio, new Vector3(0f, 100f, 400f));
             Quad = new QuadPrimitive(GraphicsDevice);
 
             base.Initialize();
@@ -56,14 +57,15 @@ namespace TGC.MonoGame.Vigilantes9.Debug.Samples.Vehicles
         {
             var keyboardState = Game.CurrentKeyboardState;
 
-            var rotationY = Convert.ToSingle(gameTime.ElapsedGameTime.TotalSeconds) *
+/*             var rotationY = Convert.ToSingle(gameTime.ElapsedGameTime.TotalSeconds) *
                 (Convert.ToSingle(keyboardState.IsKeyDown(Keys.Left)) - Convert.ToSingle(keyboardState.IsKeyDown(Keys.Right)));
 
             var rotationAcceleration = 0f;
-            
-            Model.World *= Matrix.CreateFromQuaternion(Quaternion.CreateFromYawPitchRoll(rotationY, rotationAcceleration, 0f));
+             */
+            // Model.World *= Matrix.CreateFromQuaternion(Quaternion.CreateFromYawPitchRoll(rotationY, rotationAcceleration, 0f));
             // Model.WheelsRotation = Convert.ToSingle(gameTime.TotalGameTime.TotalSeconds);
 
+            Camera.Update(gameTime);
             Model.Update(keyboardState);
 
             base.Update(gameTime);
