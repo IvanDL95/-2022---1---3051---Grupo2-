@@ -21,7 +21,6 @@ namespace TGC.MonoGame.Vigilantes9.Levels
         #region Scenario
 
         // Floor
-        public Matrix FloorWorld { get; set; }
         public QuadPrimitive FloorQuad { get; set; }
         public Effect TilingFloorEffect { get; set; }
 
@@ -33,9 +32,6 @@ namespace TGC.MonoGame.Vigilantes9.Levels
         public Matrix[] BoxesWorld { get; set; }
         public Effect BoxesEffect { get; set; }
 
-        // Level walls
-        private BoundingBox[] WallBoxes { get; set; }
-
         #endregion Scenario
 
         public SimpleLevel(Game game, Player player) : base(game, player, Vector2.One * CurrentLevelScale)
@@ -44,9 +40,6 @@ namespace TGC.MonoGame.Vigilantes9.Levels
 
         public override void Initialize()
         {
-            var levelWorldScale = LevelScale + Vector3.UnitY * LevelFloor;
-
-            FloorWorld = Matrix.CreateScale(levelWorldScale) * Matrix.CreateTranslation(0f, LevelFloor, 0f);
             FloorQuad = new QuadPrimitive(GraphicsDevice);
 
             BoxesWorld = new Matrix[1];
@@ -120,8 +113,8 @@ namespace TGC.MonoGame.Vigilantes9.Levels
         {
             var viewProjection = Player.Perspective;
 
-            TilingFloorEffect.Parameters["World"].SetValue(FloorWorld);
-            TilingFloorEffect.Parameters["WorldViewProjection"].SetValue(FloorWorld * viewProjection);
+            TilingFloorEffect.Parameters["World"].SetValue(LevelWorld);
+            TilingFloorEffect.Parameters["WorldViewProjection"].SetValue(LevelWorld * viewProjection);
             FloorQuad.Draw(TilingFloorEffect);
 
             BoxesEffect.Parameters["World"].SetValue(BoxesWorld[0]);

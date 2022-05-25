@@ -12,6 +12,7 @@ namespace TGC.MonoGame.Vigilantes9.Gameplay
     {
         protected ContentManager Content;
         protected Vector3 LevelScale { get; set; }
+        protected Matrix LevelWorld { get; set; }
 
         protected const float DefaultLevelScale = 1000f;
         protected const float LevelCeiling = 2000f;
@@ -32,6 +33,8 @@ namespace TGC.MonoGame.Vigilantes9.Gameplay
 
         public override void Initialize()
         {
+            LevelWorld = Matrix.CreateScale(LevelScale) * Matrix.CreateTranslation(0f, LevelFloor, 0f);
+
             BoundingBox[] levelBoundaries = GetBoundaries(Vector3.One * WallsThickness);
             LevelColliders = new List<BoundingBox>(levelBoundaries);
 
@@ -58,9 +61,8 @@ namespace TGC.MonoGame.Vigilantes9.Gameplay
         ///     Create Bounding Boxes to enclose the level. 6 total, 4 walls, floor and ceiling.
         /// </summary>
         /// <param name="wallThickness">Wall Thickness</param>
-        protected BoundingBox[] GetBoundaries(Vector3 wallThickness)
-        {
-            return new BoundingBox[]
+        protected BoundingBox[] GetBoundaries(Vector3 wallThickness) => (
+            new BoundingBox[]
             {
                 // Walss Boundary
                 new BoundingBox(new Vector3(-LevelScale.X, LevelFloor, -LevelScale.Z) - wallThickness, new Vector3( LevelScale.X, LevelCeiling,-LevelScale.Z)),
@@ -71,8 +73,8 @@ namespace TGC.MonoGame.Vigilantes9.Gameplay
                 // Floor/Ceiling Boundary
                 new BoundingBox(new Vector3(-LevelScale.X, LevelFloor, -LevelScale.Z) - wallThickness, new Vector3(LevelScale.X, LevelFloor, LevelScale.Z)),
                 new BoundingBox(new Vector3(-LevelScale.X, LevelCeiling, -LevelScale.Z) - wallThickness, new Vector3(LevelScale.X, LevelCeiling, LevelScale.Z)),
-            };
-        }
+            }
+        );
 
         #endregion GamePlay
     }

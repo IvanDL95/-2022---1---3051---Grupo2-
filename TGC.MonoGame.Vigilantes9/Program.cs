@@ -9,6 +9,11 @@ namespace TGC.MonoGame.Vigilantes9
         {
             using (var game = new TGCGame())
                 game.Run();
+
+/*                 
+            using (var game = new TGCDebug())
+                game.Run();
+ */
         }
     }
 }

@@ -2,8 +2,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-using TGC.MonoGame.Vigilantes9.Cameras;
-using TGC.MonoGame.Vigilantes9.Scene;
 using TGC.MonoGame.Vigilantes9.Models;
 using TGC.MonoGame.Vigilantes9.Models.Vehicles;
 using TGC.MonoGame.Vigilantes9.Gameplay;
@@ -48,7 +46,6 @@ namespace TGC.MonoGame.Vigilantes9
         protected override void LoadContent()
         {
             Player.Vehicle.LoadContent();
-
             base.LoadContent();
         }
 
@@ -63,6 +60,7 @@ namespace TGC.MonoGame.Vigilantes9
 
             base.Update(gameTime);
         }
+
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
