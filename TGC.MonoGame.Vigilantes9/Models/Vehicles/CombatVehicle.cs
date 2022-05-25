@@ -1,84 +1,93 @@
-﻿#region Using Statements
+#region Using Statements
 
-using System;
 using System.Linq;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 using TGC.MonoGame.Collisions;
 
 #endregion Using Statements
 
 namespace TGC.MonoGame.Vigilantes9.Models.Vehicles
 {
-    public class CombatVehicle : Vehicle
+    public class CombatVehicle : VehicleModel
     {
-        public CombatVehicle(Game game) : base(game)
+        protected override string VehicleModelName { get; } = "CombatVehicle/Vehicle";
+        protected override string VehicleEffectName { get; } = "TextShader";
+        public override float ModelScale { get; } = 0.1f;
+
+        public CombatVehicle(float x, float y, float z) : base(new Vector3(x,y,z), Vector3.Forward, Vector3.Up)
         {
-            World = Matrix.CreateWorld(Vector3.Zero, Vector3.Left, Vector3.Up);
         }
 
-        public override void LoadContent()
+        public override void Load(ContentManager content)
         {
-            Model = Game.Content.Load<Model>(TGCContent.ContentFolder3D + "vehicles/CombatVehicle/Vehicle");
-            // Effect = new BasicEffect(Game.GraphicsDevice);
-         
-            Effect = Game.Content.Load<Effect>(TGCContent.ContentFolderEffects + "TextShader").Clone();
-            var effect = Model.Meshes.FirstOrDefault().Effects.FirstOrDefault() as BasicEffect;
-            // Effect.Parameters["ModelTexture"].SetValue(effect.Texture);
-
-            foreach (var mesh in Model.Meshes)
-                foreach (var meshPart in mesh.MeshParts)
-                    meshPart.Effect = Effect;
-
-            Collider = BoundingVolumesExtensions.CreateAABBFrom(Model);
-            Collider = new BoundingBox(Collider.Min + Position, Collider.Max + Position);
-        }
-
-        public override void Draw(float dTime, Matrix view, Matrix projection)
-        {
-            Effect.Parameters["World"].SetValue(World);
-            Effect.Parameters["ViewProjection"].SetValue(view * projection);
-            // Effect.Parameters["ViewProjection"].SetValue(view * projection);
-            // Matriz de mundo del arma con desplazamiento para que quede arriba del vehiculo
-            // Matrix WeaponWorld = World * Matrix.CreateTranslation(Vector3.UnitY * WeaponOffset);
-            // Vehicle.Draw(World, View, Projection);
-            // Weapon.Draw(WeaponWorld, View, Projection);
-
-            // Asigno el efecto que cargue a cada parte del mesh.
-            // Un modelo puede tener mas de 1 mesh internamente.
-            // Para dibujar el modelo necesitamos pasarle informacion que el efecto esta esperando.
-            foreach (ModelMesh mesh in Model.Meshes)
-            {
-/*                 foreach (BasicEffect effect in mesh.Effects)
-                {
-                    effect.World = World;
-                    effect.View = view;
-                    effect.Projection = projection;
-                } */
-                mesh.Draw();
-            }
+            base.Load(content);
 /* 
-            foreach (ModelMesh mesh in Weapon.Meshes)
-            {
-                foreach (BasicEffect effect in mesh.Effects)
-                {
-                    effect.World = WeaponWorld;
-                    effect.View = View;
-                    effect.Projection = Projection;
+            foreach (var mesh in Model.Meshes)
+                foreach (var meshärt in mesh.MeshParts) {
+                    var texture = ((BasicEffect)meshärt.Effect).Texture;
+                    meshärt.Effect = Effect.Clone();
+                    if(texture != null)
+                        meshärt.Effect.Parameters["ModelTexture"].SetValue(texture);
                 }
+ */
+            // Look up shortcut references to the bones we are going to animate.
+            // Store the original transform matrix for each animating bone.
+            AddBone("Wheel1");
+            AddBone("Wheel2");
+            AddBone("Wheel3");
+            // AddBone("Wheel4");
+            AddBone("Wheel5");
+            AddBone("Wheel6");
+            AddBone("Wheel7");
+            AddBone("Wheel8");
+        }
 
-                mesh.Draw();
+        public override void Draw(Matrix viewProjection)
+        {
+            // Set the world matrix as the root transform of the model.
+            Model.Root.Transform = World;
+
+            // Look up combined bone matrices for the entire model.
+            Model.CopyAbsoluteBoneTransformsTo(boneTransforms);
+            
+            // Calculate matrices based on the current animation position.
+            // var wheelsRotation = -Matrix.CreateFromQuaternion(Quaternion.CreateFromAxisAngle(Vector3.UnitY, HorizontalVelocity * dTime));
+            // var wheelsRotation = Matrix.CreateFromQuaternion(Quaternion.CreateFromAxisAngle(Vector3.UnitY, WheelsRotation));
+
+            // var wheelsRotation = Matrix.CreateRotationY(WheelsRotation);
+            var wheelsRotation = Matrix.CreateFromQuaternion(Quaternion.CreateFromYawPitchRoll(WheelsRotation, 0f, WheelsAcceleration));
+
+            foreach (var wheel in WheelBones)
+            {
+                wheel.Bone.Transform =  wheelsRotation * wheel.Transform;
+            }
+
+            Effect.Parameters["ViewProjection"].SetValue(viewProjection);
+            base.Draw(viewProjection);
+        }
+
+        protected override void ApplyEffect(ModelMesh mesh, Texture2D[] textures)
+        {
+            var worldMesh = boneTransforms[mesh.ParentBone.Index] * World * Matrix.CreateRotationY(-MathHelper.PiOver2);
+            Effect.Parameters["World"]?.SetValue(worldMesh);
+/* 
+            foreach (var meshPart in mesh.MeshParts) {
+                meshPart.Effect.Parameters["World"].SetValue(worldMesh);
+            } */
+            
+            if(textures[0] != null)
+                Effect.Parameters["ModelTexture"]?.SetValue(textures[0]);
+/* 
+            var index = 0;
+            foreach (var meshPart in mesh.MeshParts)
+            {
+                var texture = textures[index];
+                if(texture != null)
+                    Effect.Parameters["ModelTexture"]?.SetValue(texture);
+                index++;
             } */
         }
-        
-        #region Properties
-
-        /// <summary>
-        ///    The XNA framework Model object that we are going to display.
-        /// </summary>
-        // private Model Weapon;
-
-        #endregion Properties
     }
 }
