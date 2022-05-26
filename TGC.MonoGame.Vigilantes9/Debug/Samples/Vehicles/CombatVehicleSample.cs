@@ -23,6 +23,7 @@ namespace TGC.MonoGame.Vigilantes9.Debug.Samples.Vehicles
 
         // The Model of the Vehicle to draw
         private VehicleModel Model { get; set; }
+        private Effect VehicleEffect;
 
         // The Camera
         private Camera Camera { get; set; }
@@ -42,13 +43,16 @@ namespace TGC.MonoGame.Vigilantes9.Debug.Samples.Vehicles
         }
 
         protected override void LoadContent()
-        {
-            Model.Load(Game.Content);
-            
+        {            
             var cobbleTexture = Game.Content.Load<Texture2D>(TGCContent.ContentFolderTextures + "floor/stones");
             TillingEffect = Game.Content.Load<Effect>(TGCContent.ContentFolderEffects + "TextureTiling");
             TillingEffect.Parameters["Texture"].SetValue(cobbleTexture);
             TillingEffect.Parameters["Tiling"].SetValue(new Vector2(20f, 20f));
+
+            VehicleEffect = Game.Content.Load<Effect>(TGCContent.ContentFolderEffects + "TextShader");
+
+            var model = Game.Content.Load<Model>(TGCContent.ContentFolder3D + "vehicles/CombatVehicle/Vehicle");
+            Model.Load(model, VehicleEffect);
 
             base.LoadContent();
         }
@@ -63,7 +67,7 @@ namespace TGC.MonoGame.Vigilantes9.Debug.Samples.Vehicles
             var rotationAcceleration = 0f;
              */
             // Model.World *= Matrix.CreateFromQuaternion(Quaternion.CreateFromYawPitchRoll(rotationY, rotationAcceleration, 0f));
-            // Model.WheelsRotation = Convert.ToSingle(gameTime.TotalGameTime.TotalSeconds);
+            Model.World *= Matrix.CreateTranslation(Vector3.Forward * 2f);
 
             Camera.Update(gameTime);
             Model.Update(keyboardState);
@@ -80,7 +84,10 @@ namespace TGC.MonoGame.Vigilantes9.Debug.Samples.Vehicles
             TillingEffect.Parameters["WorldViewProjection"].SetValue(world * Camera.View * Camera.Projection);
             Quad.Draw(TillingEffect);
 
-            Model.Draw(Camera.View * Camera.Projection);
+            VehicleEffect.Parameters["World"].SetValue(Model.World);
+            VehicleEffect.Parameters["ViewProjection"].SetValue(Camera.View * Camera.Projection);
+            Model.Draw(VehicleEffect);
+
             base.Draw(gameTime);
         }
 

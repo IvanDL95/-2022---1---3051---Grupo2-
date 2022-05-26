@@ -14,27 +14,31 @@ using Microsoft.Xna.Framework.Input;
 namespace TGC.MonoGame.Vigilantes9.Models
 {
     public abstract class VehicleModel
-    {        
-        protected abstract string VehicleModelName { get; }
-        protected abstract string VehicleEffectName { get; }
-        public virtual float ModelScale { get; } = 1f;
+    {
 
         public VehicleModel(Vector3 position, Vector3 forward, Vector3 up)
         {
             World = Matrix.CreateScale(ModelScale) * Matrix.CreateWorld(position, forward, up);
         }
+    
+        protected virtual float ModelScale { get; } = 1f;
+        protected virtual string[] wheelBonesName { get; } = new string[]{};
+
+        #region Fields
+
+        protected Model Model;
+        protected Dictionary<string, Texture2D[]> MeshTextures = new Dictionary<string, Texture2D[]>();
+        protected List<(ModelBone Bone, Matrix Transform)> WheelBones { get; } = new List<(ModelBone, Matrix)>();
+        protected Matrix[] boneTransforms;
+
+        #endregion Fields
 
         /// <summary>
         ///     Loads the vehicle model.
         /// </summary>
-        public virtual void Load(ContentManager content)
+        public virtual void Load(Model model, Effect effect)
         {
-            // Model = model;
-            string modelName = TGCContent.ContentFolder3D + "vehicles/" + VehicleModelName;
-            string effectName = TGCContent.ContentFolderEffects + VehicleEffectName;
-
-            Model = content.Load<Model>(modelName);
-            Effect = content.Load<Effect>(effectName).Clone();
+            Model = model;
 
             foreach (var mesh in Model.Meshes) {
                 var partsCount = mesh.MeshParts.Count;
@@ -42,17 +46,28 @@ namespace TGC.MonoGame.Vigilantes9.Models
 
                 for (var index = 0; index < partsCount; index++)
                 {
-                    ModelMeshPart meshPart = mesh.MeshParts[index];
-                    var basicEffect = (BasicEffect)meshPart.Effect;
+                    ModelMeshPart meshärt = mesh.MeshParts[index];
+                    var basicEffect = (BasicEffect)meshärt.Effect;
                     textures[index] = basicEffect.Texture;
-                    meshPart.Effect = Effect;
+                    meshärt.Effect = effect;
                 }
 
                 MeshTextures.Add(mesh.Name, textures);
             }
 
+            foreach (var boneName in wheelBonesName)
+            {
+                AddBone(boneName);
+            }
+
             // Allocate the transform matrix array.
             boneTransforms = new Matrix[Model.Bones.Count];
+        }
+
+        protected void AddBone(string modelBoneName)
+        {
+            ModelBone bone = Model.Bones[modelBoneName];
+            WheelBones.Add((bone, bone.Transform));
         }
 
         public virtual void Update(KeyboardState keyboardState)
@@ -66,22 +81,13 @@ namespace TGC.MonoGame.Vigilantes9.Models
             WheelsAcceleration += wheelsSpinning * 1f;
         }
 
+        protected abstract void ApplyEffect(ModelMesh mesh, Effect effect);
+
         public virtual void Draw(Effect effect)
         {
-            foreach (var mesh in Model.Meshes)
+            foreach (ModelMesh mesh in Model.Meshes)
             {
-                foreach (var meshPart in mesh.MeshParts)
-                    meshPart.Effect = effect;
-
-                mesh.Draw();
-            }
-        }
-
-        public virtual void Draw(Matrix viewProjection)
-        {
-            foreach (var mesh in Model.Meshes)
-            {
-                ApplyEffect(mesh, MeshTextures[mesh.Name]);
+                ApplyEffect(mesh, effect);
                 mesh.Draw();
             }
         }
@@ -102,25 +108,6 @@ namespace TGC.MonoGame.Vigilantes9.Models
                 mesh.Draw();
             }
         }
-
-        protected void AddBone(string modelBoneName)
-        {
-            ModelBone bone = Model.Bones[modelBoneName];
-            WheelBones.Add((bone, bone.Transform));
-        }
-
-
-        protected abstract void ApplyEffect(ModelMesh mesh, Texture2D[] textures);
-
-        #region Fields
-
-        protected Model Model;
-        protected Effect Effect;
-        protected Dictionary<string, Texture2D[]> MeshTextures = new Dictionary<string, Texture2D[]>();
-        protected List<(ModelBone Bone, Matrix Transform)> WheelBones { get; } = new List<(ModelBone, Matrix)>();
-        protected Matrix[] boneTransforms;
-
-        #endregion Fields
 
         #region Properties
 

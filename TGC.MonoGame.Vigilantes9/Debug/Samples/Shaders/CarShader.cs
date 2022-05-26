@@ -53,7 +53,7 @@ namespace TGC.MonoGame.Vigilantes9.Debug.Samples.Shaders
             //Effect = new Effect(GraphicsDevice, byteCode);
 
             // Load a shader using Content pipeline.
-            Effect = Game.Content.Load<Effect>(ContentFolderEffects + "BasicShader");
+            Effect = Game.Content.Load<Effect>(ContentFolderEffects + "TextShader");
 
             base.LoadContent();
         }
@@ -85,8 +85,10 @@ namespace TGC.MonoGame.Vigilantes9.Debug.Samples.Shaders
                 {
                     part.Effect = Effect;
                     Effect.Parameters["World"].SetValue(mesh.ParentBone.Transform);
-                    Effect.Parameters["View"].SetValue(Camera.View);
-                    Effect.Parameters["Projection"].SetValue(Camera.Projection);
+                    Effect.Parameters["ViewProjection"].SetValue(Camera.View * Camera.Projection);
+                    Effect.Parameters["ModelTexture"].SetValue(Texture);
+                    // Effect.Parameters["View"].SetValue(Camera.View);
+                    // Effect.Parameters["Projection"].SetValue(Camera.Projection);
                     //Effect.Parameters["WorldViewProjection"].SetValue(Camera.WorldMatrix * Camera.View * Camera.Projection);
                     //Effect.Parameters["ModelTexture"].SetValue(Texture);
                     //Effect.Parameters["Time"].SetValue(time);
