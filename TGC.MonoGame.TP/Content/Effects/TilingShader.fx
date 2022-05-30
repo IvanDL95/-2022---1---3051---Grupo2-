@@ -66,8 +66,6 @@ float4 BaseTilingPS(VertexShaderOutput input) : COLOR
     return tex2D(textureSampler, input.TextureCoordinate);
 }
 
-
-
 WorldVertexShaderOutput WorldTilingVS(in WorldVertexShaderInput input)
 {
     WorldVertexShaderOutput output;

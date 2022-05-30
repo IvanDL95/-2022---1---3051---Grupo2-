@@ -1,23 +1,17 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
+using TGC.MonoGame.TP.Drawers;
 
-namespace TGC.MonoGame.TP
+namespace TGC.MonoGame.TP.Geometries
 {
-    public class Quad
+    internal class Quad: Geometry
     {
-        private Effect Effect { get; set; }
-        private VertexBuffer Vertices { get; set; }
-        private IndexBuffer Indices { get; set; }
+        internal Quad(GraphicsDevice graphicsDevice): base(graphicsDevice) {}
 
-         public void Load(GraphicsDevice graphicsDevice)
-        {
+        internal Drawer Drawer() => TGCGame.GameContent.D_Vehicle;
 
-            CreateVertexBuffer(graphicsDevice);
-            CreateIndexBuffer(graphicsDevice);
-        }
-
-        private void CreateVertexBuffer(GraphicsDevice graphicsDevice)
+        protected override void CreateVertexBuffer(GraphicsDevice graphicsDevice)
         {
             var textureCoordinateLowerLeft = Vector2.Zero;
             var textureCoordinateLowerRight = Vector2.UnitX;
@@ -37,7 +31,7 @@ namespace TGC.MonoGame.TP
             Vertices.SetData(vertices);
         }
 
-        private void CreateIndexBuffer(GraphicsDevice graphicsDevice)
+        protected override void CreateIndexBuffer(GraphicsDevice graphicsDevice)
         {
             var indices = new ushort[]
             {
@@ -48,19 +42,9 @@ namespace TGC.MonoGame.TP
                 BufferUsage.WriteOnly);
             Indices.SetData(indices);
         }
-
-        public void Draw(Effect effect)
-        {
-            var graphicsDevice = effect.GraphicsDevice;
-
-            graphicsDevice.SetVertexBuffer(Vertices);
-            graphicsDevice.Indices = Indices;
-
-            foreach (var effectPass in effect.CurrentTechnique.Passes)
-            {
-                effectPass.Apply();
-                graphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, Indices.IndexCount / 3);
-            }
+    
+        internal void Draw(Matrix world) {
+            Drawer().Draw(world);
         }
     }
 }

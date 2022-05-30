@@ -11,15 +11,17 @@ namespace TGC.MonoGame.TP
 
         private const float AngleThreshold = 0.85f;
 
-        public Matrix Projection { get; private set; }
+        private Matrix Projection;
 
-        public Matrix View { get; private set; }
+        private Matrix View;
+
+        internal Matrix ViewProjection;
         
-        private Vector3 CurrentRightVector { get; set; } = Vector3.Right;
+        private Vector3 CurrentRightVector= Vector3.Right;
 
-        private float RightVectorInterpolator { get; set; } = 0f;
+        private float RightVectorInterpolator = 0f;
 
-        private Vector3 PastRightVector { get; set; } = Vector3.Right;
+        private Vector3 PastRightVector = Vector3.Right;
 
         public Camera(float aspectRatio)
         {
@@ -55,6 +57,8 @@ namespace TGC.MonoGame.TP
             var cameraCorrectUp = Vector3.Cross(right, forward);
 
             View = Matrix.CreateLookAt(offsetedPosition, followedPosition, cameraCorrectUp);
+
+            ViewProjection = View * Projection;
         }
     }
 }

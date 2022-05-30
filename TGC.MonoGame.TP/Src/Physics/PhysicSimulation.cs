@@ -44,10 +44,11 @@ namespace TGC.MonoGame.TP.Physics
                 rotation.ToBEPU(),
                 new CollidableDescription(shape, 0.1f))
             );
+   
 
         internal BodyHandle CreateDynamic(Vector3 position, Quaternion rotation, TypedIndex shape, float mass)
         {
-            Simulation.Shapes.GetShape<Sphere>(shape.Index).ComputeInertia(mass, out BodyInertia inertia);
+            Simulation.Shapes.GetShape<Box>(shape.Index).ComputeInertia(mass, out BodyInertia inertia);
             BodyDescription bodyDescription = BodyDescription.CreateDynamic(
                 new RigidPose(position.ToBEPU(),  rotation.ToBEPU()),
                 new BodyVelocity(new BEPUVector3(0f, 0f, 0f)),
@@ -57,7 +58,7 @@ namespace TGC.MonoGame.TP.Physics
             return Simulation.Bodies.Add(bodyDescription);
         }
 
-        internal BodyHandle CreateKinematic(Vector3 position, Quaternion rotation, TypedIndex shape)
+        /*internal BodyHandle CreateKinematic(Vector3 position, Quaternion rotation, TypedIndex shape)
         {
             BodyDescription bodyDescription = BodyDescription.CreateKinematic(
                 new RigidPose(position.ToBEPU(), rotation.ToBEPU()),
@@ -66,7 +67,7 @@ namespace TGC.MonoGame.TP.Physics
                 new BodyActivityDescription(-1));
             return Simulation.Bodies.Add(bodyDescription);
         }
-
+*/
         internal void DestroyStatic(StaticHandle handle) => Simulation.Statics.Remove(handle);
         internal void DestroyBody(BodyHandle handle) => Simulation.Bodies.Remove(handle);
 

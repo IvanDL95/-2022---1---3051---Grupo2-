@@ -79,8 +79,8 @@ namespace TGC.MonoGame.TP.Physics
             //While the engine won't even try creating pairs between statics at all, it will ask about kinematic-kinematic pairs.
             //Those pairs cannot emit constraints since both involved bodies have infinite inertia. Since most of the demos don't need
             //to collect information about kinematic-kinematic pairs, we'll require that at least one of the bodies needs to be dynamic.
-            return a.Mobility != CollidableMobility.Static || b.Mobility != CollidableMobility.Static;
-            //return a.Mobility == CollidableMobility.Dynamic || b.Mobility == CollidableMobility.Dynamic;
+            //return a.Mobility != CollidableMobility.Static || b.Mobility != CollidableMobility.Static;
+            return a.Mobility == CollidableMobility.Dynamic || b.Mobility == CollidableMobility.Dynamic;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -92,6 +92,8 @@ namespace TGC.MonoGame.TP.Physics
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool ConfigureContactManifold<TManifold>(int workerIndex, CollidablePair pair, ref TManifold manifold, out PairMaterialProperties pairMaterial) where TManifold : struct, IContactManifold<TManifold>
         {
+            
+            Console.WriteLine("Simulador: Encontre Colision!");
             pairMaterial = new PairMaterialProperties 
             {
                 FrictionCoefficient = 1, 
@@ -103,7 +105,7 @@ namespace TGC.MonoGame.TP.Physics
             ICollitionHandler handlerB = GetCollitionHandler(pair.B);
             handlerA?.HandleCollition(handlerB);
             handlerB?.HandleCollition(handlerA);
-            return false;
+            return true;
             //return (handlerA != null && handlerA.HandleCollition(handlerB)) || (handlerB != null && handlerB.HandleCollition(handlerA));
         }
 

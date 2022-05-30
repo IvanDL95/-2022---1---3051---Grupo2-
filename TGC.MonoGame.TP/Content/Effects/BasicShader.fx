@@ -7,7 +7,8 @@
 	#define PS_SHADERMODEL ps_4_0_level_9_1
 #endif
 
-float4x4 WorldViewProjection;
+float4x4 World;
+float4x4 ViewProjection;
 
 texture Texture;
 sampler2D TextureSampler = sampler_state
@@ -35,7 +36,8 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 {
 	VertexShaderOutput output = (VertexShaderOutput)0;
 
-    output.Position = mul(input.Position, WorldViewProjection);
+	float4 WorldPosition = mul(input.Position, World);
+    output.Position = mul(WorldPosition, ViewProjection);
 	output.TextureCoordinate = input.TextureCoordinate;
     return output;
 }
