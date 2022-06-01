@@ -40,7 +40,7 @@ namespace TGC.MonoGame.TP
 
             Camera = new Camera(GraphicsDevice.Viewport.AspectRatio);
             WoodenBox = new WoodenBox[25];
-            Floor = new Floor(5000f);
+            Floor = new Floor(2500f);
             base.Initialize();
         }
 
@@ -49,6 +49,7 @@ namespace TGC.MonoGame.TP
             GameContent = new Content(base.Content, GraphicsDevice);
             Vehicle = new Vehicle();
             Vehicle.Instantiate(Vector3.Zero);
+            Floor.Instantiate(Vector3.UnitY * -5);
 
             Vector3[] boxesPositions = {
                 new Vector3(500f, 50f, -70f),

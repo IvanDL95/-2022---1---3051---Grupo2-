@@ -20,7 +20,7 @@ namespace TGC.MonoGame.TP
         internal readonly Effect E_BasicShader, E_TilingShader;
         internal readonly Texture2D T_WoodenBox, T_Vehicle, T_Palette;
         internal readonly Drawer D_Vehicle, D_Box, D_Floor;
-        internal readonly TypedIndex SH_Vehicle, SH_Box;
+        internal readonly TypedIndex SH_Vehicle, SH_Box, SH_Floor;
 
         internal Content(ContentManager contentManager, GraphicsDevice graphicsDevice)
         {
@@ -40,8 +40,9 @@ namespace TGC.MonoGame.TP
             T_Palette = LoadTexture("floor/palette");
 
             // Shapes
-            SH_Vehicle = LoadShape(M_Vehicle.CreateBoxShape());
-            SH_Box = LoadShape(M_Box.CreateBoxShape());
+            SH_Vehicle = LoadShape(M_Vehicle.CreateBoxShape(1.5f));
+            SH_Box = LoadShape(M_Box.CreateBoxShape(2f));
+            SH_Floor = LoadShape(new Box(5000f, 10, 5000f));
 
             //Drawers
             D_Vehicle = new BasicDrawer(M_Vehicle, T_Vehicle);

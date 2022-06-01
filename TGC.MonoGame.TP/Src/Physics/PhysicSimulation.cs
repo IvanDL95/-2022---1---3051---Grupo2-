@@ -14,7 +14,7 @@ namespace TGC.MonoGame.TP.Physics
         private readonly SimpleThreadDispatcher ThreadDispatcher;
         internal Shapes Shapes() => Simulation.Shapes;
 
-        private readonly BEPUVector3 Gravity = new BEPUVector3();
+        private readonly BEPUVector3 Gravity = Vector3.UnitY.ToBEPU() * -90;
         private const float Timestep = 1 / 60f;
 
         internal readonly CollitionEvents CollitionEvents = new CollitionEvents();
@@ -51,10 +51,10 @@ namespace TGC.MonoGame.TP.Physics
             Simulation.Shapes.GetShape<Box>(shape.Index).ComputeInertia(mass, out BodyInertia inertia);
             BodyDescription bodyDescription = BodyDescription.CreateDynamic(
                 new RigidPose(position.ToBEPU(),  rotation.ToBEPU()),
-                new BodyVelocity(new BEPUVector3(0f, 0f, 0f)),
+                new BodyVelocity(new BEPUVector3(1f, 1f, 1f)),//new BodyVelocity(new BEPUVector3(0f, 0f, 0f)),
                 inertia,
                 new CollidableDescription(shape, 0.1f),
-                new BodyActivityDescription(-1));
+                new BodyActivityDescription(1f)); //new BodyActivityDescription(-1));
             return Simulation.Bodies.Add(bodyDescription);
         }
 
@@ -67,7 +67,7 @@ namespace TGC.MonoGame.TP.Physics
                 new BodyActivityDescription(-1));
             return Simulation.Bodies.Add(bodyDescription);
         }
-*/
+        */
         internal void DestroyStatic(StaticHandle handle) => Simulation.Statics.Remove(handle);
         internal void DestroyBody(BodyHandle handle) => Simulation.Bodies.Remove(handle);
 

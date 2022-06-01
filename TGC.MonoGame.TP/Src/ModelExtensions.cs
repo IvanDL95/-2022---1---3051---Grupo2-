@@ -19,7 +19,7 @@ namespace TGC.MonoGame.TP
             return effect.Texture;
         }
 
-        internal static Box CreateBoxShape(this Model model)
+        internal static Box CreateBoxShape(this Model model, float scale = 1)
         {
             Vector3 minPoint = Vector3.One * float.MaxValue;
             Vector3 maxPoint = Vector3.One * float.MinValue;
@@ -51,7 +51,7 @@ namespace TGC.MonoGame.TP
                 }
             }
             
-            Vector3 size = maxPoint - minPoint;
+            Vector3 size = (maxPoint - minPoint) * scale;
             return new Box(size.X, size.Y, size.Z);
         }
     }
