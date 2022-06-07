@@ -21,24 +21,32 @@ namespace TGC.MonoGame.TP.FinalEntities
         internal Vector3 Forward, RightDirection, UpDirection;
         protected override Vector3 Scale => Vector3.One * 1.5f;
         protected override TypedIndex Shape() => TGCGame.GameContent.SH_Vehicle;
-        protected override float Mass => 50f;
+        protected override float Mass => 300f;
 
-        private Vector3 CurrentVelocity = Vector3.Zero;
-        internal readonly float MinSpeed = -100f;
-        internal readonly float MaxSpeed = 400f;
-        private const float AccelerationRate = 180f; // Acceleration Refence 3: * 60 FPS = 180 Final Acceleration
+        private Vector3 HorizontalVelocity;
+        private Vector3 VerticalVelocity;
+        
+        private BodyReference Body;
+        internal readonly float MinSpeed = -200f;
+        internal float MaxSpeed = 1000f;
+        private const float AccelerationRate = 400f;
+
+        private bool Grounded = false;
 
         protected override void OnInstantiate()
         {
             base.OnInstantiate();
-            UpdateOrientation(Body());
+            Body = getBody();
+            UpdateOrientation(Body);
         }
 
         public virtual void Update(float dTime, KeyboardState keyboardState) {
-            BodyReference body = Body();
-            Acceleration(dTime, keyboardState, body);
-            Turning(dTime, keyboardState, body);   
-            UpdateOrientation(body);     
+            Body = getBody();
+            Acceleration(dTime, keyboardState);
+            Turning(dTime, keyboardState);
+            Jumping(keyboardState);
+            Console.WriteLine("Auto: Velocity: " + Body.Velocity.Linear);
+            UpdateOrientation(Body);     
         }
 
         //////////////////MOVEMENT//////////////////
@@ -47,45 +55,54 @@ namespace TGC.MonoGame.TP.FinalEntities
             boolToFloat(keyboardState.IsKeyDown(Keys.W)) - boolToFloat(keyboardState.IsKeyDown(Keys.S));
         protected float TurningAxis(KeyboardState keyboardState) => 
             boolToFloat(keyboardState.IsKeyDown(Keys.A)) - boolToFloat(keyboardState.IsKeyDown(Keys.D));
-        private void Acceleration(float dTime, KeyboardState keyboardState, BodyReference body)
+        
+        private void Acceleration(float dTime, KeyboardState keyboardState)
         {
             float accelerationAxis = AccelerationAxis(keyboardState);
             if(accelerationAxis != 0)
-                AddLinearVelocity(body, accelerationAxis * Forward * AccelerationRate * dTime);
+                AddLinearVelocity(accelerationAxis * Forward * AccelerationRate * dTime);
         }
 
-        private float SpinningSensibility() {
-            if(CurrentVelocity == Vector3.Zero)
-                return 0f;
-            else
-                return MathF.Abs(10 * (CurrentVelocity.Length() / MaxSpeed));
+        private void Jumping(KeyboardState keyboardState)
+        {
+            float jumpPower = 400f;
+            if(Grounded && keyboardState.IsKeyDown(Keys.Space))
+                AddLinearVelocity(Vector3.UnitY * jumpPower);
+            Grounded = false;
         }
 
-
-        internal void Turning(float dTime, KeyboardState keyboardState, BodyReference body)
+        internal void Turning(float dTime, KeyboardState keyboardState)
         {
             float turningAxis = TurningAxis(keyboardState);
             if(turningAxis != 0)
-                AddRotation(body, Quaternion.CreateFromAxisAngle(Vector3.UnitY, turningAxis * dTime)); // * SpinningSensibility() * dTime)); //dTime
+                AddRotation(Quaternion.CreateFromAxisAngle(Vector3.UnitY, turningAxis * SpinningSensibility() * dTime)); 
         }
 
-
-        private void AddRotation(BodyReference body, Quaternion rotation)
-        {
-            body.Pose.Orientation *= rotation.ToBEPU();
+        private float SpinningSensibility() {
+            if(HorizontalVelocity == Vector3.Zero)
+                return 0f;
+            else
+                return MathF.Abs((HorizontalVelocity.Length() / MaxSpeed));
         }
 
-        private void AddLinearVelocity(BodyReference body, Vector3 dVelocity)
+        private void AddRotation(Quaternion rotation)
         {
-            Vector3 velocity = body.Velocity.Linear.ToVector3() + dVelocity;
+            Body.Pose.Orientation *= rotation.ToBEPU();
+        }
+
+        private void AddLinearVelocity(Vector3 dVelocity)
+        {
+            Vector3 velocity = Body.Velocity.Linear.ToVector3() + dVelocity;
         
-            Vector3 velocityDirection = Vector3.Normalize(velocity);
-            float speed = Math.Clamp(velocity.Length(), MinSpeed, MaxSpeed);
+            HorizontalVelocity = velocity;
+            HorizontalVelocity.Y = 0;
 
-            Vector3 limitedVelocity = speed * velocityDirection;
-            CurrentVelocity = velocity;
+            VerticalVelocity = velocity;
+            VerticalVelocity.X = 0;
+            VerticalVelocity.Z = 0;
 
-            body.Velocity.Linear = limitedVelocity.ToBEPU();
+            Body.Velocity.Linear = (Vector3.Normalize(HorizontalVelocity) * Math.Clamp(HorizontalVelocity.Length(), MinSpeed, MaxSpeed) + 
+                                    Vector3.UnitY * Math.Clamp(VerticalVelocity.Y, -400f, 400f)).ToBEPU();
         }
 
         private void UpdateOrientation(BodyReference body)
@@ -96,16 +113,20 @@ namespace TGC.MonoGame.TP.FinalEntities
             UpDirection = PhysicUtils.Up(rotation);
         }
 
+        internal void Turbo()
+        {
+            MaxSpeed += 200f;
+            AddLinearVelocity(Forward * 500f);
+        }
+
         public override bool HandleCollition(ICollitionHandler other)
         {
             if (!Destroyed)
             {
-                //if (other is ALGUIEN)
-                    //PASA ALGO
+                if (other is Floor _)
+                    Grounded = true;
             }
-
-            Console.WriteLine("Auto: Colisione!");
-            return false;
+            return true;
         }
     }
 }

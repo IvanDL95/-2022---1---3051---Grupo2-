@@ -2,6 +2,9 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using BepuPhysics.Collidables;
+using Vector3 = Microsoft.Xna.Framework.Vector3;
+using BEPUVector3 =  System.Numerics.Vector3; //Microsoft.Xna.Framework.Vector3;
+using System.Numerics;
 
 namespace TGC.MonoGame.TP
 {
@@ -54,5 +57,56 @@ namespace TGC.MonoGame.TP
             Vector3 size = (maxPoint - minPoint) * scale;
             return new Box(size.X, size.Y, size.Z);
         }
+
+        internal static ConvexHull CreateConvexHullShape(this Model model, float scale)
+        {
+            int vertexCount = GetVertexCount(model);
+            TGCGame.PhysicsSimulation.BufferPool.Take<BEPUVector3>(vertexCount, out var points);
+
+            int pointIndex = 0;
+            foreach (ModelMesh mesh in model.Meshes)
+            {
+                foreach (ModelMeshPart meshPart in mesh.MeshParts)
+                {
+                    BEPUVector3[] vertices = GetVertexElement(meshPart, VertexElementUsage.Position);
+                    foreach (BEPUVector3 vertex in vertices)
+                    {
+                        points[pointIndex] = vertex * scale;
+                        pointIndex++;
+                    }
+                }
+            }
+            
+            return new ConvexHull(points, TGCGame.PhysicsSimulation.BufferPool, out _);
+        }
+
+        private static int GetVertexCount(Model model)
+        {
+            int vertexCount = 0;
+            foreach (ModelMesh mesh in model.Meshes)
+                foreach (ModelMeshPart meshPart in mesh.MeshParts)
+                    vertexCount += meshPart.NumVertices;
+            return vertexCount;
+        }
+
+        private static BEPUVector3[] GetVertexElement(ModelMeshPart meshPart, VertexElementUsage usage)
+        {
+            VertexDeclaration vd = meshPart.VertexBuffer.VertexDeclaration;
+            VertexElement[] elements = vd.GetVertexElements();
+
+            bool elementPredicate(VertexElement ve) => ve.VertexElementUsage == usage && ve.VertexElementFormat == VertexElementFormat.Vector3;
+            if (!elements.Any(elementPredicate))
+                return null;
+
+            VertexElement element = elements.First(elementPredicate);
+
+            BEPUVector3[] vertexData = new BEPUVector3[meshPart.NumVertices];
+            meshPart.VertexBuffer.GetData((meshPart.VertexOffset * vd.VertexStride) + element.Offset,
+                vertexData, 0, vertexData.Length, vd.VertexStride);
+
+            return vertexData;
+        }
+
+
     }
 }

@@ -6,6 +6,7 @@ using BepuPhysics.Collidables;
 using BepuPhysics.CollisionDetection;
 using BepuPhysics.Constraints;
 using BepuUtilities;
+using TGC.MonoGame.TP.FinalEntities;
 
 namespace TGC.MonoGame.TP.Physics
 {
@@ -71,6 +72,7 @@ namespace TGC.MonoGame.TP.Physics
 
     public struct NarrowPhaseCallbacks : INarrowPhaseCallbacks
     {
+        //private float FrictionCoefficient = 0;
         public void Initialize(Simulation simulation) { }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -94,19 +96,25 @@ namespace TGC.MonoGame.TP.Physics
         {
             
             Console.WriteLine("Simulador: Encontre Colision!");
+            /*if(handlerA is Floor _ || handlerB is Floor _)
+                FrictionCoefficient = 2;
+            else
+                FrictionCoefficient = 0;
+*/
             pairMaterial = new PairMaterialProperties 
             {
-                FrictionCoefficient = 1, 
+                FrictionCoefficient = 3, 
                 MaximumRecoveryVelocity = 2, 
                 SpringSettings = new SpringSettings(30, 1) 
             };
 
             ICollitionHandler handlerA = GetCollitionHandler(pair.A);
             ICollitionHandler handlerB = GetCollitionHandler(pair.B);
-            handlerA?.HandleCollition(handlerB);
-            handlerB?.HandleCollition(handlerA);
-            return true;
-            //return (handlerA != null && handlerA.HandleCollition(handlerB)) || (handlerB != null && handlerB.HandleCollition(handlerA));
+            //handlerA?.HandleCollition(handlerB);
+            //handlerB?.HandleCollition(handlerA);
+            //return true;
+            
+            return (handlerA != null && handlerA.HandleCollition(handlerB)) && (handlerB != null && handlerB.HandleCollition(handlerA));
         }
 
         private ICollitionHandler GetCollitionHandler(CollidableReference collider) =>

@@ -10,16 +10,15 @@ namespace TGC.MonoGame.TP.PhysicsEntities
         protected virtual Vector3 Scale { get; } = Vector3.One;
         protected abstract TypedIndex Shape();
         protected BodyHandle Handle;
-        protected BodyReference Body() => TGCGame.PhysicsSimulation.GetBody(Handle);
-        protected bool Destroyed { get; private set; } = false;
+        protected BodyReference getBody() => TGCGame.PhysicsSimulation.GetBody(Handle);
+        internal bool Destroyed = false;
 
         internal override Matrix World()
         {
-            RigidPose pose = Body().Pose;
+            RigidPose pose = getBody().Pose;
             return Matrix.CreateScale(Scale) * Matrix.CreateFromQuaternion(pose.Orientation.ToQuaternion()) * Matrix.CreateTranslation(pose.Position.ToVector3());
         }
 
-        
         internal override void Instantiate(Vector3 position, Quaternion rotation)
         {
             Handle = CreateBody(position, rotation);
@@ -30,7 +29,7 @@ namespace TGC.MonoGame.TP.PhysicsEntities
         internal override void Destroy()
         {
             TGCGame.PhysicsSimulation.CollitionEvents.UnregisterCollider(Handle);
-            if (!Body().Exists && !Destroyed)
+            if (!getBody().Exists && !Destroyed)
                 TGCGame.PhysicsSimulation.DestroyBody(Handle);
             base.Destroy();
             Destroyed = true;

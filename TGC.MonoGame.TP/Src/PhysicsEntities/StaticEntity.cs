@@ -34,12 +34,6 @@ namespace TGC.MonoGame.TP.PhysicsEntities
             base.Destroy();
         }
 
-        public virtual bool HandleCollition(ICollitionHandler other)
-        {
-             Console.WriteLine("Colisione!");
-            //if (other is IStaticDamageable damageable)
-            //    damageable.ReceiveStaticDamage();
-            return false;
-        }
+        public virtual bool HandleCollition(ICollitionHandler other) => true;
     }
 }

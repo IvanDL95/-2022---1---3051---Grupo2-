@@ -19,7 +19,8 @@ namespace TGC.MonoGame.TP
         private Vehicle Vehicle;
         private Floor Floor;
         private WoodenBox[] WoodenBox;
-
+        private PowerUpBox[] PowerUpBox;
+        //private Tub Tub;
         internal TGCGame()
         {
             Graphics = new GraphicsDeviceManager(this);
@@ -40,14 +41,18 @@ namespace TGC.MonoGame.TP
 
             Camera = new Camera(GraphicsDevice.Viewport.AspectRatio);
             WoodenBox = new WoodenBox[25];
-            Floor = new Floor(2500f);
+            PowerUpBox = new PowerUpBox[5];
+            Floor = new Floor(5000f);
+            Vehicle = new Vehicle();
+            //Tub = new Tub();
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
             GameContent = new Content(base.Content, GraphicsDevice);
-            Vehicle = new Vehicle();
+
+            //Tub.Instantiate(Vector3.Zero);
             Vehicle.Instantiate(Vector3.Zero);
             Floor.Instantiate(Vector3.UnitY * -5);
 
@@ -73,6 +78,12 @@ namespace TGC.MonoGame.TP
                 WoodenBox[i].Instantiate(boxesPositions[i]);
             }
 
+            for (int i = 0; i < 5; i++)
+            {
+                PowerUpBox[i] = new PowerUpBox();
+                PowerUpBox[i].Instantiate(new Vector3((i+1)*-400, 100f, (i+1)*600));
+            }
+
             base.LoadContent();
         }
 
@@ -85,8 +96,12 @@ namespace TGC.MonoGame.TP
                 Exit();
 
             Vehicle.Update(dTime, keyboardState);
+            for (int i = 0; i < 5; i++)
+                if(!PowerUpBox[i].Destroyed)
+                    PowerUpBox[i].Update(dTime);  
+
             PhysicsSimulation.Update();
-            
+
             Camera.Update(gameTime, Vehicle.World());
 
             base.Update(gameTime);
@@ -99,9 +114,15 @@ namespace TGC.MonoGame.TP
 
             Vehicle.Draw();
             Floor.Draw();
+            //Tub.Draw();
+
             for (int i = 0; i < 13; i++)
                 WoodenBox[i].Draw();
 
+            for (int i = 0; i < 5; i++)
+                if(!PowerUpBox[i].Destroyed)
+                    PowerUpBox[i].Draw();
+            
             base.Draw(gameTime);
         }
 
